@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "src"
+version = "0.1.0"
+description = ""
+authors = ["kondou <kondou@localdomain>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.11.0"
+isort = "^5.12.0"
+mypy = "^1.7.0"
+pre-commit = "^3.5.0"
+pylint = "^3.0.2"
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+csv_preprocessor = "src.csv_preprocessor:cli"
+tool_csv = "tests.tool_csv:cli"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
+src_paths = ["src", "tests"]
+skip_glob = ["tmp/*"]
+
+[tool.mypy]
+strict = true
+
+[tool.pytest.ini_option]
+#addopts = ""
+testpaths = ["tests"]

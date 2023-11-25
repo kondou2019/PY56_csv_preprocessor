@@ -1,0 +1,36 @@
+exclude: \.drawio\.svg
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    - id: trailing-whitespace
+      exclude: .md$
+    - id: end-of-file-fixer
+      exclude: .md$
+    - id: mixed-line-ending
+    - id: check-yaml
+    - id: check-added-large-files
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.10.0
+    hooks:
+    - id: markdownlint-cli2
+      args:
+        [
+          #"--fix",
+          "--config",
+          ".markdownlint.yaml",
+        ]
+  - repo: local
+    hooks:
+      - id: isort
+        name: isort
+        entry: poetry run isort
+        language: system
+        types: [python]
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: poetry run black
+        language: system
+        types: [python]

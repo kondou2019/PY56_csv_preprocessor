@@ -1,0 +1,13 @@
+# Reference: https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.yaml
+
+# MD012/no-multiple-blanks - Multiple consecutive blank lines
+MD012: false
+
+# MD013/line-length - Line length
+MD013: false
+
+# MD025/single-title/single-h1 - Multiple top-level headings in the same document
+MD025: false
+
+# MD033/no-inline-html - Inline HTML
+MD033: false
