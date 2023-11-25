@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "src"
+name = "csv_preprocessor"
 version = "0.1.255"
 description = ""
 authors = ["kondou <kondou@localdomain>"]
