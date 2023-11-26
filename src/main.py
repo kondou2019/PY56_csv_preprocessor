@@ -110,22 +110,22 @@ def column_select(start: int, end: int, input: Optional[str], output: Optional[s
 
 
 @click.command(help="CSVファイルの種別を判定する")
-@click.option("--header-dir", "-i", type=click.Path(exists=True), required=True, help="CSVヘッダファイルディレクトリ")
+@click.option("--csv-info-dir", "-i", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
 @click.argument("files", type=str, nargs=-1, required=True)
-def csv_filetype(header_dir: str, files: tuple[str]) -> int:
+def csv_filetype(csv_info_dir: str, files: tuple[str]) -> int:
     """!
     @brief CSVファイルの種別を判定する
     @retval 0 正常終了
     @retval 1 異常終了
     """
-    header_dir_path = Path(header_dir)
+    csv_info_dir_path = Path(csv_info_dir)
     # CSV種別のリストを作成
     csv_type_list: list[tuple[str, list[str]]] = []  # (種別名, ヘッダ行のリスト)
-    for file_path in header_dir_path.glob("*.csv"):
+    for file_path in csv_info_dir_path.glob("*_header.csv"):
         with open(file_path, mode="r", encoding="utf-8") as f:
             lines = f.readlines()
         #
-        csv_type_list.append((file_path.stem, lines))
+        csv_type_list.append((file_path.name[: -len("_header.csv")], lines))
     # CSV種別のリストをヘッダ行の長い順にソート※1行目が同一の場合に間違って判定しないようにするため
     csv_type_list.sort(key=lambda x: len(x[1]), reverse=True)
     header_max_line = len(csv_type_list[0][1])
