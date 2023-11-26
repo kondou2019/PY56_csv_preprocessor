@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import json
 import sys
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
@@ -7,6 +9,55 @@ import click
 
 from src.csv import csv_file_reader, csv_file_writer
 from src.table_utl import column_exclusive_index_group
+
+
+@dataclass
+class CsvFileTypeInfo:
+    """!
+    @brief CSVファイルの種別情報
+    """
+
+    type_name: str
+    header_lines: list[str] = field(default_factory=list)
+
+
+def csv_filetype_read(csv_info_dir_path: Path) -> list[CsvFileTypeInfo]:
+    """!
+    @brief CSVファイルの種別を読み込む
+    @param csv_info_dir_path CSV情報ファイルのディレクトリ
+    @return CSVファイルの種別のリスト。ヘッダ行の長い順にソートされている。
+    """
+    # CSV種別のリストを作成
+    csv_type_list: list[CsvFileTypeInfo] = []
+    for file_path in csv_info_dir_path.glob("*_header.csv"):
+        with open(file_path, mode="r", encoding="utf-8") as f:
+            lines = f.readlines()
+        #
+        csv_type_list.append(CsvFileTypeInfo(type_name=file_path.name[: -len("_header.csv")], header_lines=lines))
+    # CSV種別のリストをヘッダ行の長い順にソート※1行目が同一の場合に間違って判定しないようにするため
+    csv_type_list.sort(key=lambda x: len(x.header_lines), reverse=True)
+    return csv_type_list
+
+
+def csv_filetype_detect(csv_type_list: list[CsvFileTypeInfo], file_path: Path) -> Optional[CsvFileTypeInfo]:
+    """!
+    @brief CSVファイルの種別を判定する
+    @param csv_type_list CSVファイルの種別のリスト
+    @param file_path CSVファイルのパス
+    @retval CSVファイルの種別
+    @retval None 判定できない
+    """
+    # ファイルの読み込み
+    lines: list[str] = []
+    with open(file_path, mode="r", encoding="utf-8") as f:
+        for _ in range(len(csv_type_list[0].header_lines)):  # header_max_line以上は読まない
+            lines.append(f.readline())
+    # ファイルの種別判定
+    for csv_type in csv_type_list:
+        heaser_lines = csv_type.header_lines
+        if lines[0 : len(heaser_lines)] == heaser_lines:
+            return csv_type
+    return None
 
 
 def option_path(input: Optional[str], output: Optional[str]) -> (Optional[Path], Optional[Path]):
@@ -109,7 +160,7 @@ def column_select(start: int, end: int, input: Optional[str], output: Optional[s
     return 0
 
 
-@click.command(help="CSVファイルの種別を判定する")
+@click.command(help="CSVファイルの種別を判定")
 @click.option("--csv-info-dir", "-i", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
 @click.argument("files", type=str, nargs=-1, required=True)
 def csv_filetype(csv_info_dir: str, files: tuple[str]) -> int:
@@ -120,29 +171,77 @@ def csv_filetype(csv_info_dir: str, files: tuple[str]) -> int:
     """
     csv_info_dir_path = Path(csv_info_dir)
     # CSV種別のリストを作成
-    csv_type_list: list[tuple[str, list[str]]] = []  # (種別名, ヘッダ行のリスト)
-    for file_path in csv_info_dir_path.glob("*_header.csv"):
-        with open(file_path, mode="r", encoding="utf-8") as f:
-            lines = f.readlines()
-        #
-        csv_type_list.append((file_path.name[: -len("_header.csv")], lines))
-    # CSV種別のリストをヘッダ行の長い順にソート※1行目が同一の場合に間違って判定しないようにするため
-    csv_type_list.sort(key=lambda x: len(x[1]), reverse=True)
-    header_max_line = len(csv_type_list[0][1])
+    csv_type_list = csv_filetype_read(csv_info_dir_path)
     # ファイルの種別判定
     for file in files:
-        # ファイルの読み込み
-        lines: list[str] = []
-        with open(file, mode="r", encoding="utf-8") as f:
-            for _ in range(header_max_line):  # header_max_line以上は読まない
-                lines.append(f.readline())
-        # ファイルの種別判定
-        for key, value in csv_type_list:
-            if lines[0 : len(value)] == value:
-                print(f"{file}\t{key}")
-                break
+        file_path = Path(file)
+        #
+        csv_type = csv_filetype_detect(csv_type_list, file_path)
+        if csv_type is not None:
+            print(f"{file}\t{csv_type.type_name}")
         else:
             print(f"{file}\t***unknown***")
+    return 0
+
+
+@dataclass
+class CsvReportInfo:
+    """!
+    @brief CSVファイルの情報
+    """
+
+    file_path: str
+    csv_type_name: str
+    header_row_count: Optional[int] = None
+    column_count_min: int = 0
+    column_count_max: int = 0
+    row_count: int = 0
+
+
+@click.command(help="CSVファイルの情報を表示")
+@click.option("--csv-info-dir", "-i", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
+@click.argument("files", type=str, nargs=-1, required=True)
+def csv_report(csv_info_dir: str, files: tuple[str]) -> int:
+    """!
+    @brief CSVファイルの情報を表示する
+    @retval 0 正常終了
+    @retval 1 異常終了
+    """
+    csv_info_dir_path = Path(csv_info_dir)
+    # CSV種別のリストを作成
+    csv_type_list = csv_filetype_read(csv_info_dir_path)
+    # ファイルの種別判定
+    csv_report_info_list: list[CsvReportInfo] = []
+    for file in files:
+        file_path = Path(file)
+        #
+        csv_type_name: Optional[str] = None
+        header_row_count = None
+        csv_type = csv_filetype_detect(csv_type_list, file_path)
+        if csv_type is not None:
+            csv_type_name = csv_type.type_name
+            header_row_count = len(csv_type.header_lines)
+        #
+        tbl = csv_file_reader(file_path)
+        column_count_min = sys.maxsize
+        column_count_max = -1
+        row_count = tbl.row_count()
+        for columns in tbl._rows:
+            column_count = len(columns)
+            column_count_min = min(column_count_min, column_count)
+            column_count_max = max(column_count_max, column_count)
+        # ファイルの情報を登録
+        report_info = CsvReportInfo(
+            file_path=file_path.as_posix(),
+            csv_type_name=csv_type_name,
+            header_row_count=header_row_count,
+            column_count_min=column_count_min,
+            column_count_max=column_count_max,
+            row_count=row_count,
+        )
+        csv_report_info_list.append(report_info)
+    # ファイルの情報をJSON形式で表示
+    print(json.dumps([x.__dict__ for x in csv_report_info_list], indent=2))
     return 0
 
 
@@ -157,6 +256,7 @@ cli.add_command(column_exclusive)
 cli.add_command(column_move)
 cli.add_command(column_select)
 cli.add_command(csv_filetype)
+cli.add_command(csv_report)
 
 if __name__ == "__main__":
     rc = cli(standalone_mode=False)

@@ -31,7 +31,7 @@ poetry run csv_preprocessor column-select -i test_data/header0/3x3.csv --start 2
 
 ### CSVファイルの種別を判定(csv-filetype)
 
-CSVのヘッダ行からCSVファイルの種別を判定する。--csv-info-dirディレクトリにヘッダ行だけを記述したファイルを格納する。FILESで指定したファイルのヘッダ行と一致する場合ファイル名をファイル種別として出力する
+CSVのヘッダ行からCSVファイルの種別を判定する。--csv-info-dirディレクトリにヘッダ行だけを記述したファイルを格納する。FILESで指定したファイルのヘッダ行と一致する場合ファイル名をファイル種別として出力する。
 
 ```shell
 $ poetry run csv_preprocessor csv-filetype --csv-info-dir test_data/csv_info test_data/header1/2x2.csv test_data/header1/3x3.csv test_data/header1/5x5.csv test_data/header2/3x3.csv
@@ -40,6 +40,14 @@ test_data/header1/3x3.csv       1x3
 test_data/header1/5x5.csv       1x5
 test_data/header2/3x3.csv       2x3
 $ 
+```
+
+### CSVファイルの情報を出力(csv-report)
+
+CSVファイルの情報をJSON形式で出力する。
+
+```shell
+poetry run csv_preprocessor csv-report --csv-info-dir test_data/csv_info test_data/header1/2x2.csv test_data/header1/3x3.csv test_data/header1/5x5.csv test_data/header2/3x3.csv
 ```
 
 ## tool_csvコマンド
