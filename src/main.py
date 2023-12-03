@@ -10,7 +10,7 @@ import click
 
 from src.common import textfile_read, textfile_read_stream, textfile_write
 from src.csv import csv_file_reader, csv_file_writer, csv_reader
-from src.table_utl import column_exclusive_index_group, column_merge_index_group
+from src.table_utl import column_exclusive_index_group, column_merge_index_group, table_sort
 
 
 @dataclass
@@ -116,6 +116,15 @@ def option_index_list(index_list: str) -> list[int]:
     return [int(i) for i in index_list[1:-1].split(",")]
 
 
+def option_value_list(value_list: str) -> list[str]:
+    """!
+    @brief オプションのリスト指定の共通処理を行う
+    @param value_list 値リスト,"[value[,...]]"
+    @return インデックスリスト
+    """
+    return [v for v in value_list[1:-1].split(",")]
+
+
 def custom_group_index_list(ctx: click.core.Context, param: click.Option, value: tuple[str]):
     """!
     @brief 独自のチェックを行う関数。グループインデックスリストのチェックを行う。
@@ -135,6 +144,18 @@ def custom_index_list(ctx: click.core.Context, param: click.Option, value: str):
     return value
 
 
+def custom_value_list(ctx: click.core.Context, param: click.Option, value: Optional[str]):
+    """!
+    @brief 独自のチェックを行う関数。リスト形式の値のチェックを行う。
+    @details 値は文字列を想定している。
+    """
+    if value is None:
+        return value
+    if value[0] != "[" or value[-1] != "]":
+        raise click.BadParameter('リストは"[value[,...]]"の形式である必要があります。')
+    return value
+
+
 @click.command(help="カラムの排他。--column-groupで指定したカラムグループを別々の行に分離する")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
@@ -146,7 +167,7 @@ def custom_index_list(ctx: click.core.Context, param: click.Option, value: str):
     type=str,
     help="カラムのインデックスリスト。2回以上指定する。[index[,...]]",
 )
-@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数,ヘッダ行は排他の対象になりません")
+@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
 def column_exclusive(input: Optional[str], output: Optional[str], column_group: tuple[str], header: int) -> int:
     """!
     @brief カラムの排他
@@ -180,7 +201,7 @@ def column_exclusive(input: Optional[str], output: Optional[str], column_group: 
     type=str,
     help="カラムのインデックスリスト。2回以上指定する。[index[,...]]",
 )
-@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数,ヘッダ行は排他の対象になりません")
+@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
 def column_merge(
     input: Optional[str], output: Optional[str], column_key: str, column_group: tuple[str], header: int
 ) -> int:
@@ -356,6 +377,45 @@ def csv_report(csv_info_dir: str, files: tuple[str]) -> int:
     return 0
 
 
+@click.command(help="ソート")
+@click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
+@click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
+@click.option(
+    "--column-key",
+    callback=custom_index_list,
+    required=True,
+    type=str,
+    help="ソートするカラムのインデックスリスト。[index[,...]]",
+)
+@click.option(
+    "--column-attr",
+    callback=custom_value_list,
+    type=str,
+    help="ソートするカラムの属性(str,int,float)。省略時はすべてstr。[attr[,...]]",
+)
+@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
+@click.option("--reverse", is_flag=True, help="降順にソート")
+def sort(
+    input: Optional[str], output: Optional[str], column_key: str, column_attr: Optional[str], header: int, reverse: bool
+) -> int:
+    """!
+    @brief カラムの排他
+    @retval 0 正常終了
+    @retval 1 異常終了
+    """
+    input_path, output_path = option_path(input, output)
+    column_key = option_index_list(column_key)
+    if column_attr is None:
+        column_attr = ["str"] * len(column_key)
+    else:
+        column_attr = option_value_list(column_attr)
+    # 実行
+    tbl = csv_file_reader(input_path, header=header)
+    table_sort(tbl, column_key, column_attr, reverse=reverse)
+    csv_file_writer(output_path, tbl)
+    return 0
+
+
 # サブコマンドをメインコマンドに追加
 @click.group(help="CSVファイルの前処理ツール")
 @click.version_option()
@@ -370,6 +430,7 @@ cli.add_command(column_select)
 cli.add_command(csv_filetype)
 cli.add_command(csv_header_change)
 cli.add_command(csv_report)
+cli.add_command(sort)
 
 if __name__ == "__main__":
     rc = cli(standalone_mode=False)

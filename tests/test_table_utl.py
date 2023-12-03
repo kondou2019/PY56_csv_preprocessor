@@ -7,6 +7,7 @@ from src.table import Table
 from src.table_utl import (
     column_exclusive_index_group,
     column_merge_index_group,
+    table_sort,
     values_equal_index_group,
     values_non_empty,
     values_non_empty_index_group,
@@ -159,3 +160,59 @@ def test_column_merge_index_group_0104B():  # カラムグループ以外が不�
     assert tbl._rows[1] == ["11", "12", "", "14", "15"]
     assert tbl._rows[2] == ["11", "", "13", "14", "99"]
     assert tbl._rows[3] == ["21", "22", "23", "24", "25"]
+
+
+def test_table_sort_0101N():
+    LOCAL_TABLE_3x3 = [
+        ["a", "2", "21"],
+        ["b", "1", "12"],
+        ["c", "1", "11"],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_3x3))
+    table_sort(tbl, {1, 2}, ["str", "str"])
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["c", "1", "11"]
+    assert tbl._rows[1] == ["b", "1", "12"]
+    assert tbl._rows[2] == ["a", "2", "21"]
+
+
+def test_table_sort_0102N():  # 降順
+    LOCAL_TABLE_3x3 = [
+        ["c", "1", "11"],
+        ["b", "1", "12"],
+        ["a", "2", "21"],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_3x3))
+    table_sort(tbl, {1, 2}, ["str", "str"], reverse=True)
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["a", "2", "21"]
+    assert tbl._rows[1] == ["b", "1", "12"]
+    assert tbl._rows[2] == ["c", "1", "11"]
+
+
+def test_table_sort_0201N():  # int
+    LOCAL_TABLE_3x3 = [
+        ["a", "1", "x"],
+        ["b", "10", "y"],
+        ["c", "2", "z"],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_3x3))
+    table_sort(tbl, {1}, ["int"])
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["a", "1", "x"]
+    assert tbl._rows[1] == ["c", "2", "z"]
+    assert tbl._rows[2] == ["b", "10", "y"]
+
+
+def test_table_sort_0202N():  # float
+    LOCAL_TABLE_3x3 = [
+        ["a", "1.1", "x"],
+        ["b", "10.2", "y"],
+        ["c", "2.3", "z"],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_3x3))
+    table_sort(tbl, {1}, ["float"])
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["a", "1.1", "x"]
+    assert tbl._rows[1] == ["c", "2.3", "z"]
+    assert tbl._rows[2] == ["b", "10.2", "y"]

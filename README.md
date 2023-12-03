@@ -65,6 +65,21 @@ CSVファイルの情報をJSON形式で出力する。
 poetry run csv_preprocessor csv-report --csv-info-dir test_data/csv_info test_data/header1/2x2.csv test_data/header1/3x3.csv test_data/header1/5x5.csv test_data/header2/3x3.csv
 ```
 
+### CSVファイルのソート(sort)
+
+CSVファイルをソートする。
+
+```shell
+poetry run csv_preprocessor sort -i test_data/header1/5x5_sort.csv --column-key [1,2] --header 1
+```
+
+数値順。--column-attr
+
+```shell
+poetry run csv_preprocessor sort -i test_data/header1/5x3_sort_int.csv --header 1 --column-key [1,2] --column-attr [int,str]
+```
+
+
 ## カラムの階層構造
 
 カラムに複数のデータを記述するとき、行を分割して記述したい場合がある。column-exclusiveを使うことで行を分割することができる。

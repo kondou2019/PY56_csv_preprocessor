@@ -1,4 +1,5 @@
 import itertools
+from typing import Optional
 
 from src.table import Table
 
@@ -134,4 +135,34 @@ def column_merge_index_group(table: Table, column_key: list[int], column_group: 
                 table._rows[row_index][j] = columns2[j]
         # マージした行を削除する
         table.row_remove(row_index + 1)
+    pass
+
+
+def table_sort(table: Table, column_key_set: set[int], column_attr: list[str], *, reverse: bool = False):
+    """!
+    @brief テーブルをソートする
+    @param table テーブル
+    @param column_key_set ソートするカラムのインデックスのセット
+    @param column_attr カラムの属性のリスト。str, int, float
+    @param reverse 降順にする場合はTrue
+    """
+
+    # 複数の列でソートするラムダ関数
+    def custom_sort(row):
+        # return tuple(row[col] for col in column_key_set)
+        result = []
+        for i, col in enumerate(column_key_set):
+            if column_attr[i] == "str":
+                result.append(row[col])
+            elif column_attr[i] == "int":
+                result.append(int(row[col]))
+            elif column_attr[i] == "float":
+                result.append(float(row[col]))
+            else:
+                raise Exception("unknown column attribute")
+        return tuple(result)
+
+    #
+    _sorted_data = sorted(table._rows, key=custom_sort, reverse=reverse)
+    table._rows = _sorted_data
     pass
