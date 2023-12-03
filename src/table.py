@@ -29,6 +29,13 @@ class Table:
         for i, row in enumerate(self._rows):
             row.append(column[i])
 
+    def column_count(self) -> int:
+        """!
+        @brief カラムの数を取得する
+        @return カラム数
+        """
+        return len(self._rows[0])
+
     def column_insert(self, column_index: int, column: list[str]) -> None:
         """!
         @brief 列を挿入する

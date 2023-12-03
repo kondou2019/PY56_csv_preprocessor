@@ -10,7 +10,7 @@ import click
 
 from src.common import textfile_read, textfile_read_stream, textfile_write
 from src.csv import csv_file_reader, csv_file_writer, csv_reader
-from src.table_utl import column_exclusive_index_group
+from src.table_utl import column_exclusive_index_group, column_merge_index_group
 
 
 @dataclass
@@ -116,13 +116,22 @@ def option_index_list(index_list: str) -> list[int]:
     return [int(i) for i in index_list[1:-1].split(",")]
 
 
-def custom_index_list(ctx: click.core.Context, param: click.Option, value: tuple[str]):
+def custom_group_index_list(ctx: click.core.Context, param: click.Option, value: tuple[str]):
     """!
-    @brief 独自のチェックを行う関数。インデックスリストのチェックを行う。
+    @brief 独自のチェックを行う関数。グループインデックスリストのチェックを行う。
     """
     for v in value:
         if v[0] != "[" or v[-1] != "]":
             raise click.BadParameter('インデックスリストは"[index[,...]]"の形式である必要があります。')
+    return value
+
+
+def custom_index_list(ctx: click.core.Context, param: click.Option, value: str):
+    """!
+    @brief 独自のチェックを行う関数。インデックスリストのチェックを行う。
+    """
+    if value[0] != "[" or value[-1] != "]":
+        raise click.BadParameter('インデックスリストは"[index[,...]]"の形式である必要があります。')
     return value
 
 
@@ -131,7 +140,7 @@ def custom_index_list(ctx: click.core.Context, param: click.Option, value: tuple
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option(
     "--column-group",
-    callback=custom_index_list,
+    callback=custom_group_index_list,
     multiple=True,
     required=True,
     type=str,
@@ -149,6 +158,43 @@ def column_exclusive(input: Optional[str], output: Optional[str], column_group: 
     # 実行
     tbl = csv_file_reader(input_path, header=header)
     column_exclusive_index_group(tbl, column_group_list)
+    csv_file_writer(output_path, tbl)
+    return 0
+
+
+@click.command(help="カラムのマージ。column-exclusiveで排他した行をマージして元にもどす")
+@click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
+@click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
+@click.option(
+    "--column-key",
+    callback=custom_index_list,
+    required=True,
+    type=str,
+    help="マージする行で一致するカラム。[index[,...]]",
+)
+@click.option(
+    "--column-group",
+    callback=custom_group_index_list,
+    multiple=True,
+    required=True,
+    type=str,
+    help="カラムのインデックスリスト。2回以上指定する。[index[,...]]",
+)
+@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数,ヘッダ行は排他の対象になりません")
+def column_merge(
+    input: Optional[str], output: Optional[str], column_key: str, column_group: tuple[str], header: int
+) -> int:
+    """!
+    @brief カラムの排他
+    @retval 0 正常終了
+    @retval 1 異常終了
+    """
+    input_path, output_path = option_path(input, output)
+    column_key = option_index_list(column_key)
+    column_group_list = [option_index_list(i) for i in column_group]
+    # 実行
+    tbl = csv_file_reader(input_path, header=header)
+    column_merge_index_group(tbl, column_key, column_group_list)
     csv_file_writer(output_path, tbl)
     return 0
 
@@ -318,6 +364,7 @@ def cli():
 
 
 cli.add_command(column_exclusive)
+cli.add_command(column_merge)
 cli.add_command(column_move)
 cli.add_command(column_select)
 cli.add_command(csv_filetype)

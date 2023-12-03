@@ -13,6 +13,14 @@ CSVファイルの前処理を行う。
 poetry run csv_preprocessor column-exclusive -i test_data/header1/5x5.csv --header 1 --column-group [1,2] --column-group [3,4]
 ```
 
+### カラムのマージ(column-merge)
+
+column-exclusiveで排他した行をマージして元にもどす。
+
+```shell
+poetry run csv_preprocessor column-merge -i tmp/5x5h1_ex.csv --header 1 --column-key [0] --column-group [1,2] --column-group [3,4]
+```
+
 ### カラムの移動(column-move)
 
 カラムを移動する。
