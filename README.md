@@ -2,8 +2,7 @@
 
 CSVファイルの前処理を行う。
 
-## csv_preprocessorコマンド
-
+## csv_preprocessorサブコマンド
 
 ### カラムの排他(column-exclusive)
 
@@ -58,7 +57,6 @@ CSVファイルのヘッダを変更する。
 poetry run csv_preprocessor csv-header-change --input test_data/header1/3x3.csv --input-header test_data/csv_info/1x3_header.csv --output-header test_data/csv_info/2x3_header.csv
 ```
 
-
 ### CSVファイルの情報を出力(csv-report)
 
 CSVファイルの情報をJSON形式で出力する。
@@ -66,6 +64,15 @@ CSVファイルの情報をJSON形式で出力する。
 ```shell
 poetry run csv_preprocessor csv-report --csv-info-dir test_data/csv_info test_data/header1/2x2.csv test_data/header1/3x3.csv test_data/header1/5x5.csv test_data/header2/3x3.csv
 ```
+
+## カラムの階層構造
+
+カラムに複数のデータを記述するとき、行を分割して記述したい場合がある。column-exclusiveを使うことで行を分割することができる。
+更にカラム階層構造になっている場合は、column-exclusiveを複数回実行することで更に分割することができる。
+
+マージ
+column-mergeをつかうことでcolumn-exclusiveで分割した行を元に戻すことができる。
+階層構造になっている場合は、column-exclusiveと逆の手順で実行することで元に戻すことができる。
 
 ## tool_csvコマンド
 
