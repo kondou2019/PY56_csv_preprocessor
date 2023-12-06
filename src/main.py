@@ -270,6 +270,9 @@ def csv_filetype(csv_info_dir: str, files: tuple[str]) -> int:
     csv_info_dir_path = Path(csv_info_dir)
     # CSV種別のリストを作成
     csv_type_list = csv_filetype_list_read(csv_info_dir_path)
+    if len(csv_type_list) == 0:
+        print("CSV情報ファイルが見つかりません。", file=sys.stderr)
+        return 1
     # ファイルの種別判定
     for file in files:
         file_path = Path(file)
@@ -342,6 +345,9 @@ def csv_report(csv_info_dir: str, files: tuple[str]) -> int:
     csv_info_dir_path = Path(csv_info_dir)
     # CSV種別のリストを作成
     csv_type_list = csv_filetype_list_read(csv_info_dir_path)
+    if len(csv_type_list) == 0:
+        print("CSV情報ファイルが見つかりません。", file=sys.stderr)
+        return 1
     # ファイルの種別判定
     csv_report_info_list: list[CsvReportInfo] = []
     for file in files:
