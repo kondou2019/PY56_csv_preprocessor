@@ -259,7 +259,7 @@ def column_select(start: int, end: int, input: Optional[str], output: Optional[s
 
 
 @click.command(help="CSVファイルの種別を判定")
-@click.option("--csv-info-dir", "-i", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
+@click.option("--csv-info-dir", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
 @click.argument("files", type=str, nargs=-1, required=True)
 def csv_filetype(csv_info_dir: str, files: tuple[str]) -> int:
     """!
@@ -331,7 +331,7 @@ class CsvReportInfo:
 
 
 @click.command(help="CSVファイルの情報を表示")
-@click.option("--csv-info-dir", "-i", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
+@click.option("--csv-info-dir", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
 @click.argument("files", type=str, nargs=-1, required=True)
 def csv_report(csv_info_dir: str, files: tuple[str]) -> int:
     """!
