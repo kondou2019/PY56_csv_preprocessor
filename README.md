@@ -4,7 +4,24 @@ CSVファイルの前処理を行う。
 
 ## csv_preprocessorサブコマンド
 
-### カラムの排他(column-exclusive)
+### カラムを追加(column-add)
+
+カラムを追加する。
+
+```shell
+poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column 0
+poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column -1
+```
+
+### カラムを削除(column-del)
+
+カラムを削除する。
+
+```shell
+poetry run csv_preprocessor column-del -i test_data/header0/3x3.csv --column 0
+```
+
+### カラムを排他(column-exclusive)
 
 1行に同時に指定できないカラムを分離する。
 
@@ -12,7 +29,7 @@ CSVファイルの前処理を行う。
 poetry run csv_preprocessor column-exclusive -i test_data/header1/5x5.csv --header 1 --column-group [1,2] --column-group [3,4]
 ```
 
-### カラムのマージ(column-merge)
+### カラムをマージ(column-merge)
 
 column-exclusiveで排他した行をマージして元にもどす。
 
@@ -20,7 +37,7 @@ column-exclusiveで排他した行をマージして元にもどす。
 poetry run csv_preprocessor column-merge -i tmp/5x5h1_ex.csv --header 1 --column-key [0] --column-group [1,2] --column-group [3,4]
 ```
 
-### カラムの移動(column-move)
+### カラムを移動(column-move)
 
 カラムを移動する。
 
@@ -28,12 +45,26 @@ poetry run csv_preprocessor column-merge -i tmp/5x5h1_ex.csv --header 1 --column
 poetry run csv_preprocessor column-move -i test_data/header0/3x3.csv --from 2 --to 0
 ```
 
-### カラムの選択(column-select)
+### カラムを選択(column-select)
 
-指定したカラムの範囲を出力する。
+指定した範囲のカラムを出力する。
 
 ```shell
 poetry run csv_preprocessor column-select -i test_data/header0/3x3.csv --start 2 --end 3
+```
+
+### カラムでソート(column-sort)
+
+CSVファイルをソートする。
+
+```shell
+poetry run csv_preprocessor column-sort -i test_data/header1/5x5_sort.csv --column-key [1,2] --header 1
+```
+
+数値順。--column-attr
+
+```shell
+poetry run csv_preprocessor column-sort -i test_data/header1/5x3_sort_int.csv --header 1 --column-key [1,2] --column-attr [int,str]
 ```
 
 ### CSVファイルの種別を判定(csv-filetype)
@@ -49,12 +80,29 @@ test_data/header2/3x3.csv       2x3
 $ 
 ```
 
+### CSVファイルにヘッダを追加(csv-header-add)
+
+CSVファイルにヘッダを追加する。
+
+```shell
+poetry run csv_preprocessor csv-header-add -i test_data/header0/3x3.csv --add-header test_data/csv_info/1x3_header.csv
+```
+
 ### CSVファイルのヘッダを変更(csv-header-change)
 
 CSVファイルのヘッダを変更する。
 
 ```shell
 poetry run csv_preprocessor csv-header-change --input test_data/header1/3x3.csv --input-header test_data/csv_info/1x3_header.csv --output-header test_data/csv_info/2x3_header.csv
+```
+
+### CSVファイルのヘッダを削除(csv-header-del)
+
+CSVファイルのヘッダを削除する。
+
+```shell
+poetry run csv_preprocessor csv-header-del -i test_data/header1/3x3.cs
+v --header 1
 ```
 
 ### CSVファイルの情報を出力(csv-report)
@@ -64,21 +112,6 @@ CSVファイルの情報をJSON形式で出力する。
 ```shell
 poetry run csv_preprocessor csv-report --csv-info-dir test_data/csv_info test_data/header1/2x2.csv test_data/header1/3x3.csv test_data/header1/5x5.csv test_data/header2/3x3.csv
 ```
-
-### CSVファイルのソート(sort)
-
-CSVファイルをソートする。
-
-```shell
-poetry run csv_preprocessor sort -i test_data/header1/5x5_sort.csv --column-key [1,2] --header 1
-```
-
-数値順。--column-attr
-
-```shell
-poetry run csv_preprocessor sort -i test_data/header1/5x3_sort_int.csv --header 1 --column-key [1,2] --column-attr [int,str]
-```
-
 
 ## カラムの階層構造
 
