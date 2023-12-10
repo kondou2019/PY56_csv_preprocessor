@@ -6,6 +6,7 @@ import io
 from src.table import Table
 from src.table_utl import (
     column_exclusive_index_group,
+    column_fill_index,
     column_merge_index_group,
     table_sort,
     values_equal_index_group,
@@ -99,6 +100,76 @@ def test_column_exclusive_index_group_0101N():
     assert tbl._rows[3] == ["1", "", "3"]
     assert tbl._rows[4] == ["4", "5", ""]
     assert tbl._rows[5] == ["4", "", "6"]
+
+
+def test_column_fill_index_0101N():  # すべて空
+    LOCAL_TABLE_2x2 = [
+        ["a", ""],
+        ["b", ""],
+        ["c", ""],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
+    column_fill_index(tbl, 1, "x")
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["a", "x"]
+    assert tbl._rows[1] == ["b", "x"]
+    assert tbl._rows[2] == ["c", "x"]
+
+
+def test_column_fill_index_0102N():  # 一部空
+    LOCAL_TABLE_2x2 = [
+        ["a", ""],
+        ["b", "2"],
+        ["c", ""],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
+    column_fill_index(tbl, 1, "x")
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["a", "x"]
+    assert tbl._rows[1] == ["b", "2"]
+    assert tbl._rows[2] == ["c", "x"]
+
+
+def test_column_fill_index_0201N():  # ffill,すべて空
+    LOCAL_TABLE_2x2 = [
+        ["a", ""],
+        ["b", ""],
+        ["c", ""],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
+    column_fill_index(tbl, 1, "", ffill=True)
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["a", ""]
+    assert tbl._rows[1] == ["b", ""]
+    assert tbl._rows[2] == ["c", ""]
+
+
+def test_column_fill_index_0202N():  # ffill,一部空
+    LOCAL_TABLE_2x2 = [
+        ["a", ""],
+        ["b", "2"],
+        ["c", ""],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
+    column_fill_index(tbl, 1, "", ffill=True)
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["a", ""]
+    assert tbl._rows[1] == ["b", "2"]
+    assert tbl._rows[2] == ["c", "2"]
+
+
+def test_column_fill_index_0203B():  # ffill,初期値を指定
+    LOCAL_TABLE_2x2 = [
+        ["a", ""],
+        ["b", "2"],
+        ["c", ""],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
+    column_fill_index(tbl, 1, "x", ffill=True)
+    assert len(tbl._rows) == 3
+    assert tbl._rows[0] == ["a", "x"]
+    assert tbl._rows[1] == ["b", "2"]
+    assert tbl._rows[2] == ["c", "2"]
 
 
 def test_column_merge_index_group_0101N():

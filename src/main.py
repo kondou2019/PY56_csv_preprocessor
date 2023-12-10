@@ -10,7 +10,7 @@ import click
 
 from src.common import textfile_read, textfile_read_stream, textfile_write
 from src.csv import csv_file_reader, csv_file_writer, csv_reader
-from src.table_utl import column_exclusive_index_group, column_merge_index_group, table_sort
+from src.table_utl import column_exclusive_index_group, column_fill_index, column_merge_index_group, table_sort
 
 
 @dataclass
@@ -220,6 +220,26 @@ def column_exclusive(input: Optional[str], output: Optional[str], column_group: 
     # 実行
     tbl = csv_file_reader(input_path, header=header)
     column_exclusive_index_group(tbl, column_group_list)
+    csv_file_writer(output_path, tbl)
+    return 0
+
+
+@click.command(help="カラムの欠損値を置換(穴埋め)")
+@click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
+@click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
+@click.option("--column", type=int, required=True, help="対象のカラム(インデックス)")
+@click.option("--value", type=str, default="", show_default=True, help="置換する値")
+@click.option("--ffill", is_flag=True, help="前の行からの穴埋め")
+def column_fill(input: Optional[str], output: Optional[str], column: int, value: str, ffill: bool) -> int:
+    """!
+    @brief カラムの欠損値を置換(穴埋め)
+    @retval 0 正常終了
+    @retval 1 異常終了
+    """
+    input_path, output_path = option_path(input, output)
+    # 実行
+    tbl = csv_file_reader(input_path)
+    column_fill_index(tbl, column, value, ffill=ffill)
     csv_file_writer(output_path, tbl)
     return 0
 
@@ -523,6 +543,7 @@ def cli():
 cli.add_command(column_add)
 cli.add_command(column_del)
 cli.add_command(column_exclusive)
+cli.add_command(column_fill)
 cli.add_command(column_merge)
 cli.add_command(column_move)
 cli.add_command(column_select)

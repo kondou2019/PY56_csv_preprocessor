@@ -92,6 +92,27 @@ def column_exclusive_index_group(table: Table, column_group: list[list[int]]):
     pass
 
 
+def column_fill_index(table: Table, column_index: int, value: str, *, ffill: bool = False):
+    """!
+    @brief カラムの空白を埋める
+    @param table テーブル
+    @param column_index カラムのインデックス
+    @param value 埋める文字列
+    @param ffill 前方から埋める場合はTrue
+    """
+    value_prev = value
+    for row in table._rows:
+        column_value = row[column_index]
+        if column_value == "":
+            if ffill:
+                row[column_index] = value_prev
+            else:
+                row[column_index] = value
+        else:
+            value_prev = column_value
+    pass
+
+
 def column_merge_index_group(table: Table, column_key: list[int], column_group: list[list[int]]):
     """!
     @brief カラムグループに従い、排他されたレコードをマージする

@@ -29,6 +29,16 @@ poetry run csv_preprocessor column-del -i test_data/header0/3x3.csv --column 0
 poetry run csv_preprocessor column-exclusive -i test_data/header1/5x5.csv --header 1 --column-group [1,2] --column-group [3,4]
 ```
 
+### カラムの欠損値を置換(column-fill)
+
+カラムの欠損値を置換(穴埋め)する。
+
+```shell
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2.csv --column 1 --value x
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2.csv --column 1 --ffill
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2.csv --column 1 --value x --ffill
+```
+
 ### カラムをマージ(column-merge)
 
 column-exclusiveで排他した行をマージして元にもどす。
