@@ -5,7 +5,7 @@ from src.csv import csv_reader
 from src.table import Table
 
 
-def test_csv_reader_0101():
+def test_csv_reader_0101() -> None:
     test_data = """\
 a,b,c
 1,2,3

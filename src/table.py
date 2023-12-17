@@ -1,9 +1,14 @@
+from typing import Type, TypeVar
+
+Self = TypeVar("Self", bound="Table")
+
+
 class Table:
     """!
     @brief 表のデータクラス
     """
 
-    def __init__(self):
+    def __init__(self: Self):
         """!
         @brief コンストラクタ
         """
@@ -11,7 +16,7 @@ class Table:
         self._rows: list[list[str]] = []
 
     @classmethod
-    def create_rows(cls, rows: list[list[str]]) -> "Table":
+    def create_rows(cls: Type[Self], rows: list[list[str]]) -> "Table":
         """!
         @brief 表のデータを作成する
         @param rows 行のリスト
@@ -21,7 +26,7 @@ class Table:
         tbl._rows = rows
         return tbl
 
-    def column_add(self, column: list[str]) -> None:
+    def column_add(self: Self, column: list[str]) -> None:
         """!
         @brief 列を最後に追加する
         @param column 列
@@ -29,14 +34,14 @@ class Table:
         for i, row in enumerate(self._rows):
             row.append(column[i])
 
-    def column_count(self) -> int:
+    def column_count(self: Self) -> int:
         """!
         @brief カラムの数を取得する
         @return カラム数
         """
         return len(self._rows[0])
 
-    def column_insert(self, column_index: int, column: list[str]) -> None:
+    def column_insert(self: Self, column_index: int, column: list[str]) -> None:
         """!
         @brief 列を挿入する
         @param column_index 挿入する列の位置
@@ -45,7 +50,7 @@ class Table:
         for i, row in enumerate(self._rows):
             row.insert(column_index, column[i])
 
-    def column_insert_empty(self, column_index: int) -> None:
+    def column_insert_empty(self: Self, column_index: int) -> None:
         """!
         @brief 空の列を挿入する
         @param column_index 挿入する列の位置
@@ -53,7 +58,7 @@ class Table:
         for row in self._rows:
             row.insert(column_index, "")
 
-    def column_move(self, from_index: int, to_index: int) -> None:
+    def column_move(self: Self, from_index: int, to_index: int) -> None:
         """!
         @brief 列を移動する
         @param from_index 移動元の列
@@ -62,7 +67,7 @@ class Table:
         for row in self._rows:
             row.insert(to_index, row.pop(from_index))
 
-    def column_remove(self, column_index: int) -> None:
+    def column_remove(self: Self, column_index: int) -> None:
         """!
         @brief 指定した列を削除する
         @param column_index 削除する列
@@ -70,21 +75,21 @@ class Table:
         for row in self._rows:
             row.pop(column_index)
 
-    def row_add(self, row: list[str]) -> None:
+    def row_add(self: Self, row: list[str]) -> None:
         """!
         @brief 行を最後に追加する
         @param row 行
         """
         self._rows.append(row)
 
-    def row_count(self) -> int:
+    def row_count(self: Self) -> int:
         """!
         @brief 行数を取得する
         @return 行数
         """
         return len(self._rows)
 
-    def row_duplicate(self, row_index: int) -> list[str]:
+    def row_duplicate(self: Self, row_index: int) -> list[str]:
         """!
         @brief 行を複製する
         @param row_index 複製する行の位置
@@ -94,7 +99,7 @@ class Table:
         self._rows.insert(row_index + 1, duplicated_row)  # 次の行に挿入する
         return duplicated_row
 
-    def row_insert(self, row_index: int, row: list[str]) -> None:
+    def row_insert(self: Self, row_index: int, row: list[str]) -> None:
         """!
         @brief 行を挿入する
         @param row_index 挿入する行の位置
@@ -102,14 +107,14 @@ class Table:
         """
         self._rows.insert(row_index, row)
 
-    def row_insert_empty(self, row_index: int) -> None:
+    def row_insert_empty(self: Self, row_index: int) -> None:
         """!
         @brief 空の行を挿入する
         @param row_index 挿入する行の位置
         """
         self._rows.insert(row_index, [])  # TODO: カラム数分の空のリストを作成する
 
-    def row_move(self, from_index: int, to_index: int) -> None:
+    def row_move(self: Self, from_index: int, to_index: int) -> None:
         """!
         @brief 行を移動する
         @param from_index 移動元の行
@@ -117,7 +122,7 @@ class Table:
         """
         self._rows.insert(to_index, self._rows.pop(from_index))
 
-    def row_remove(self, row_index: int) -> list[str]:
+    def row_remove(self: Self, row_index: int) -> list[str]:
         """!
         @brief 指定した行を削除する
         @param row_index 削除する行
@@ -125,7 +130,7 @@ class Table:
         """
         return self._rows.pop(row_index)
 
-    def row_remove_multi(self, start_row_index: int, end_row_index: int) -> list[list[str]]:
+    def row_remove_multi(self: Self, start_row_index: int, end_row_index: int) -> list[list[str]]:
         """!
         @brief 指定した範囲の行を削除する
         @param row_index 削除する行
@@ -135,7 +140,7 @@ class Table:
         del self._rows[start_row_index:end_row_index]
         return removed_items
 
-    def table_select_column_range(self, start_index: int, end_index: int) -> "Table":
+    def table_select_column_range(self: Self, start_index: int, end_index: int) -> "Table":
         """!
         @brief 指定した範囲の列を抽出する
         @param start_index 抽出する列の開始位置

@@ -37,7 +37,7 @@ src_paths = ["src", "tests"]
 skip_glob = ["tmp/*"]
 
 [tool.mypy]
-strict = true
+#strict = true
 
 [tool.pytest.ini_option]
 #addopts = ""

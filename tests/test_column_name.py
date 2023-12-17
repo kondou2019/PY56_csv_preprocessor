@@ -12,7 +12,7 @@ a,b,c
 """
 
 
-def test_column_name_0101N():
+def test_column_name_0101N() -> None:
     tbl: Table = csv_reader(io.StringIO(CSV_3x3))
     header = tbl._rows[0]
     tbl.row_remove(0)  # ヘッダーを削除

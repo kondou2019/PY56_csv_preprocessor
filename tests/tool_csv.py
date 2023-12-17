@@ -8,7 +8,7 @@ import click
 __VERSION__ = "0.0.1"
 
 
-def option_path(input: Optional[str], output: Optional[str]) -> (Optional[Path], Optional[Path]):
+def option_path(input: Optional[str], output: Optional[str]) -> tuple[Optional[Path], Optional[Path]]:
     """!
     @brief オプションのパスの共通処理を行う
     @param input 入力ファイル
@@ -126,7 +126,8 @@ def make_csv(output: Optional[str], header_count: int, column_count: int, row_co
     _, output_path = option_path(None, output)
     # 実行
     if output_path is None:
-        csv_writer(type, sys.stdout, header_count=header_count, column_count=column_count, row_count=row_count)
+        stream = TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+        csv_writer(type, stream, header_count=header_count, column_count=column_count, row_count=row_count)
     else:
         with output_path.open(mode="w", encoding="utf-8") as o_stream:
             csv_writer(type, o_stream, header_count=header_count, column_count=column_count, row_count=row_count)

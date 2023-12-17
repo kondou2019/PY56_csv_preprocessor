@@ -30,7 +30,8 @@ def csv_reader(i_stream: TextIOWrapper, *, header: int = 0) -> Table:
 
 def csv_file_reader(file: Optional[Path], *, header: int = 0) -> Table:
     if file is None:
-        return csv_reader(sys.stdin, header=header)
+        stream = TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+        return csv_reader(stream, header=header)
     #
     with file.open(mode="r", encoding="utf-8") as i_stream:
         return csv_reader(i_stream, header=header)
@@ -57,7 +58,8 @@ def csv_writer(o_stream: TextIOWrapper, table: Table):
 
 def csv_file_writer(file: Optional[Path], table: Table):
     if file is None:
-        return csv_writer(sys.stdout, table)
+        stream = TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+        return csv_writer(stream, table)
     #
     with file.open(mode="w", encoding="utf-8") as o_stream:
         return csv_writer(o_stream, table)

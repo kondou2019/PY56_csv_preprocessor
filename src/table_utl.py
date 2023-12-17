@@ -138,15 +138,15 @@ def column_merge_index_group(table: Table, column_key: list[int], column_group: 
             row_index += 1
             continue
         #
-        index_group1 = values_non_empty_index_group(columns1, column_group)
-        index_group1 = set(index_group1)  # setにすることで、重複を除去する
-        index_group2 = values_non_empty_index_group(columns2, column_group)
-        index_group2 = set(index_group2)  # setにすることで、重複を除去する
+        # index_group1 = values_non_empty_index_group(columns1, column_group)
+        index_group1 = set(values_non_empty_index_group(columns1, column_group))  # setにすることで、重複を除去する
+        # index_group2 = values_non_empty_index_group(columns2, column_group)
+        index_group2 = set(values_non_empty_index_group(columns2, column_group))  # setにすることで、重複を除去する
         if index_group1.isdisjoint(index_group2) == False:  # 重複があるためマージできない
             row_index += 1
             continue
         # column_keyとcolumn_group以外のカラムが同一であることを確認する
-        b = values_equal_index_group(columns1, columns2, other_column_index_list)
+        b = values_equal_index_group(columns1, columns2, list(other_column_index_list))
         if b == False:
             row_index += 1
             continue

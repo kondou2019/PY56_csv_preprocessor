@@ -91,7 +91,7 @@ def csv_filetype_detect_lines(csv_type_list: list[CsvFileTypeInfo], lines: list[
     return None
 
 
-def option_path(input: Optional[str], output: Optional[str]) -> (Optional[Path], Optional[Path]):
+def option_path(input: Optional[str], output: Optional[str]) -> tuple[Optional[Path], Optional[Path]]:
     """!
     @brief オプションのパスの共通処理を行う
     @param input 入力ファイル
@@ -272,11 +272,11 @@ def column_merge(
     @retval 1 異常終了
     """
     input_path, output_path = option_path(input, output)
-    column_key = option_index_list(column_key)
+    column_key_index_list = option_index_list(column_key)
     column_group_list = [option_index_list(i) for i in column_group]
     # 実行
     tbl = csv_file_reader(input_path, header=header)
-    column_merge_index_group(tbl, column_key, column_group_list)
+    column_merge_index_group(tbl, column_key_index_list, column_group_list)
     csv_file_writer(output_path, tbl)
     return 0
 
@@ -346,14 +346,14 @@ def column_sort(
     @retval 1 異常終了
     """
     input_path, output_path = option_path(input, output)
-    column_key = option_index_list(column_key)
+    column_key_index_list = option_index_list(column_key)
     if column_attr is None:
-        column_attr = ["str"] * len(column_key)
+        column_attr_list = ["str"] * len(column_key_index_list)
     else:
-        column_attr = option_value_list(column_attr)
+        column_attr_list = option_value_list(column_attr)
     # 実行
     tbl = csv_file_reader(input_path, header=header)
-    table_sort(tbl, column_key, column_attr, reverse=reverse)
+    table_sort(tbl, set(column_key_index_list), column_attr_list, reverse=reverse)
     csv_file_writer(output_path, tbl)
     return 0
 
@@ -476,7 +476,7 @@ class CsvReportInfo:
     """
 
     file_path: str
-    csv_type_name: str
+    csv_type_name: Optional[str] = None
     header_row_count: Optional[int] = None
     column_count_min: int = 0
     column_count_max: int = 0

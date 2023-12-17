@@ -1,11 +1,11 @@
 import sys
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Optional
+from typing import Optional, cast
 
 
 def textfile_read(
-    file_path: Path, *, line_max: Optional[int] = None, remove_newline: bool = False, skip_line_count: int = 0
+    file_path: Optional[Path], *, line_max: Optional[int] = None, remove_newline: bool = False, skip_line_count: int = 0
 ) -> list[str]:
     """!
     @brief テキストファイルを読み込む
@@ -13,7 +13,8 @@ def textfile_read(
     @param file_path テキストファイルのパス。Noneの場合は標準入力から読み込む。
     """
     if file_path is None:
-        return textfile_read_stream(sys.stdin, skip_line_count=skip_line_count, line_max=line_max)
+        stream = TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+        return textfile_read_stream(stream, skip_line_count=skip_line_count, line_max=line_max)
     #
     with open(file_path, mode="r", encoding="utf-8") as f:
         return textfile_read_stream(f, skip_line_count=skip_line_count, line_max=line_max)
@@ -30,26 +31,26 @@ def textfile_read_stream(
     @param skip_line_count 読み込みをスキップする行数
     @return テキストファイルの内容
     """
-    # line_maxが指定されていない場合
+    lines: list[str] = []
     if line_max is None:
+        # line_maxが指定されていない場合
         lines = i_stream.readlines()
         if skip_line_count > 0:
             lines = lines[skip_line_count:]
         if remove_newline:
             lines = [line.rstrip("\n") for line in lines]
-        return lines
-    # line_maxが指定されている場合
-    lines: list[str] = []
-    for _ in range(skip_line_count + line_max):
-        line = i_stream.readline()
-        if line == "":
-            break
-        if skip_line_count > 0:
-            skip_line_count -= 1
-            continue
-        if remove_newline:
-            line = line.rstrip("\n")
-        lines.append(line)
+    else:
+        # line_maxが指定されている場合
+        for _ in range(skip_line_count + line_max):
+            line = i_stream.readline()
+            if line == "":
+                break
+            if skip_line_count > 0:
+                skip_line_count -= 1
+                continue
+            if remove_newline:
+                line = line.rstrip("\n")
+            lines.append(line)
     return lines
 
 
@@ -68,11 +69,13 @@ def textfile_write(
     @param append 追記する
     """
     if file_path is None:
-        return textfile_write_stream(sys.stdout, lines, add_newline=add_newline, skip_line_count=skip_line_count)
+        stream = TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+        return textfile_write_stream(stream, lines, add_newline=add_newline, skip_line_count=skip_line_count)
     #
     mode = "a" if append else "w"
     with open(file_path, mode=mode, encoding="utf-8") as f:
-        return textfile_write_stream(f, lines, add_newline=add_newline, skip_line_count=skip_line_count)
+        stream = cast(TextIOWrapper, f)
+        return textfile_write_stream(stream, lines, add_newline=add_newline, skip_line_count=skip_line_count)
 
 
 def textfile_write_stream(
