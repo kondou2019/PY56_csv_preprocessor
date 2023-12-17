@@ -1,7 +1,27 @@
+import io
 import itertools
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
 
-from src.table import Table
+from src.common import textfile_read
+from src.csv import csv_file_reader, csv_reader
+from src.table import CsvFileTypeInfo, Table
+
+
+@dataclass
+class CsvReportInfo:
+    """!
+    @brief CSVファイルの情報
+    """
+
+    file_path: str
+    csv_type_name: Optional[str] = None
+    header_row_count: Optional[int] = None
+    column_count_min: int = 0
+    column_count_max: int = 0
+    row_count: int = 0
 
 
 def values_equal_index_group(values1: list[str], values2: list[str], index_list: list[int]) -> bool:
@@ -157,6 +177,112 @@ def column_merge_index_group(table: Table, column_key: list[int], column_group: 
         # マージした行を削除する
         table.row_remove(row_index + 1)
     pass
+
+
+def csv_filetype_detect(csv_type_list: list[CsvFileTypeInfo], file_path: Path) -> Optional[CsvFileTypeInfo]:
+    """!
+    @brief CSVファイルの種別を判定する
+    @param csv_type_list CSVファイルの種別のリスト
+    @param file_path CSVファイルのパス
+    @retval CSVファイルの種別
+    @retval None 判定できない
+    """
+    # ファイルの読み込み
+    lines = textfile_read(file_path, line_max=csv_type_list[0].header_row_count)
+    # ファイルの種別判定
+    return csv_filetype_detect_lines(csv_type_list, lines)
+
+
+def csv_filetype_detect_lines(csv_type_list: list[CsvFileTypeInfo], lines: list[str]) -> Optional[CsvFileTypeInfo]:
+    """!
+    @brief CSVファイルの種別を判定する
+    @param csv_type_list CSVファイルの種別のリスト
+    @param lines 判定するヘッダ行※改行コードを含むこと
+    @retval CSVファイルの種別
+    @retval None 判定できない
+    """
+    # ファイルの種別判定
+    for csv_type in csv_type_list:
+        header_lines = csv_type.header_lines
+        if lines[0 : len(header_lines)] == header_lines:
+            return csv_type
+    return None
+
+
+def csv_filetype_list_read(csv_info_dir_path: Path) -> list[CsvFileTypeInfo]:
+    """!
+    @brief CSVファイルの種別を読み込む
+    @param csv_info_dir_path CSV情報ファイルのディレクトリ
+    @return CSVファイルの種別のリスト。ヘッダ行の長い順にソートされている。
+    """
+    # CSV種別のリストを作成
+    csv_type_list: list[CsvFileTypeInfo] = []
+    for file_path in csv_info_dir_path.glob("*_header.csv"):
+        csv_type = csv_filetype_read(file_path)
+        csv_type_list.append(csv_type)
+    # CSV種別のリストをヘッダ行の長い順にソート※1行目が同一の場合に間違って判定しないようにするため
+    csv_type_list.sort(key=lambda x: x.header_row_count, reverse=True)
+    return csv_type_list
+
+
+def csv_filetype_read(csv_info_path: Path) -> CsvFileTypeInfo:
+    """!
+    @brief CSVファイルの種別を読み込む
+    @param csv_info_path CSV情報ファイル
+    @return CSVファイルの種別
+    """
+    lines = textfile_read(csv_info_path)
+    #
+    type_name = ""
+    if csv_info_path.name.endswith("_header.csv"):
+        type_name = csv_info_path.name[: -len("_header.csv")]
+    else:
+        type_name = csv_info_path.stem
+    #
+    tbl = csv_reader(io.StringIO("".join(lines)))
+    column_count = len(tbl._rows[0])
+    row_count = tbl.row_count()
+    #
+    csv_type = CsvFileTypeInfo(
+        type_name=type_name,
+        header_lines=lines,
+        header_column_count=column_count,
+        header_row_count=row_count,
+        _header_rows=tbl._rows,
+    )
+    return csv_type
+
+
+def table_report(csv_type_list: list[CsvFileTypeInfo], file_path: Path) -> CsvReportInfo:
+    """!
+    @brief CSVファイルの情報を表示する
+    """
+    #
+    csv_type_name: Optional[str] = None
+    header_row_count = None
+    csv_type = csv_filetype_detect(csv_type_list, file_path)
+    if csv_type is not None:
+        csv_type_name = csv_type.type_name
+        header_row_count = csv_type.header_row_count
+    #
+    tbl = csv_file_reader(file_path)
+    column_count_min = sys.maxsize
+    column_count_max = -1
+    row_count = tbl.row_count()
+    for columns in tbl._rows:
+        column_count = len(columns)
+        column_count_min = min(column_count_min, column_count)
+        column_count_max = max(column_count_max, column_count)
+    # ファイルの情報を登録
+    report_info = CsvReportInfo(
+        file_path=file_path.as_posix(),
+        csv_type_name=csv_type_name,
+        header_row_count=header_row_count,
+        column_count_min=column_count_min,
+        column_count_max=column_count_max,
+        row_count=row_count,
+    )
+    return report_info
 
 
 def table_sort(table: Table, column_key_set: set[int], column_attr: list[str], *, reverse: bool = False):

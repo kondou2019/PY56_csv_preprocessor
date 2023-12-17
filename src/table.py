@@ -1,4 +1,19 @@
+from dataclasses import dataclass, field
 from typing import Type, TypeVar
+
+
+@dataclass
+class CsvFileTypeInfo:
+    """!
+    @brief CSVファイルの種別情報
+    """
+
+    type_name: str
+    header_lines: list[str] = field(default_factory=list)
+    header_column_count: int = 0
+    header_row_count: int = 0
+    _header_rows: list[list[str]] = field(default_factory=list)
+
 
 Self = TypeVar("Self", bound="Table")
 
@@ -16,7 +31,7 @@ class Table:
         self._rows: list[list[str]] = []
 
     @classmethod
-    def create_rows(cls: Type[Self], rows: list[list[str]]) -> "Table":
+    def create_rows(cls: Type[Self], rows: list[list[str]]) -> Self:
         """!
         @brief 表のデータを作成する
         @param rows 行のリスト
@@ -133,21 +148,64 @@ class Table:
     def row_remove_multi(self: Self, start_row_index: int, end_row_index: int) -> list[list[str]]:
         """!
         @brief 指定した範囲の行を削除する
-        @param row_index 削除する行
+        @param start_row_index 削除する開始インデックス
+        @param end_row_index 削除する終了インデックス※終了インデックスは含まない
         @return 削除した行
         """
         removed_items = self._rows[start_row_index:end_row_index]
         del self._rows[start_row_index:end_row_index]
         return removed_items
 
-    def table_select_column_range(self: Self, start_index: int, end_index: int) -> "Table":
+    def table_column_add(self: Self, column_index: int) -> None:
+        """!
+        @brief カラムを追加
+        @param column_index 追加するカラム(インデックス)。インデックスの前に追加する。最後に追加する場合は、-1を指定する。
+        """
+        if column_index < 0:
+            for columns in self._rows:
+                columns.append("")
+        else:
+            for columns in self._rows:
+                columns.insert(column_index, "")
+
+    def table_column_del(self: Self, column_index: int) -> None:
+        """!
+        @brief カラムを削除
+        @param column_index 削除するカラム(インデックス)
+        """
+        for columns in self._rows:
+            del columns[column_index]
+
+    def table_header_add(self: Self, csv_filetype: CsvFileTypeInfo) -> None:
+        """!
+        @brief テーブルにヘッダを追加
+        @param csv_filetype ヘッダ情報
+        @exception ValueError 追加するCSVヘッダとカラム数が一致しない場合
+        """
+        # 追加するCSVヘッダとカラム数が一致するか確認
+        if self.column_count() != csv_filetype.header_column_count:
+            raise ValueError("追加するCSVヘッダとカラム数が一致しません。")
+        #
+        self._header_rows = csv_filetype._header_rows  # ヘッダを追加
+
+    def table_header_del(self: Self, *, header_count: int = 0) -> None:
+        """!
+        @brief テーブルのヘッダを取り除く
+        @param header_count ヘッダの行数
+        """
+        if len(self._header_rows) != 0:
+            self._header_rows = []
+        else:
+            self.row_remove_multi(0, header_count)
+
+    def table_select_column_range(self: Self, start_index: int, end_index: int) -> Self:
         """!
         @brief 指定した範囲の列を抽出する
         @param start_index 抽出する列の開始位置
         @param end_index 抽出する列の終了位置
         @return 抽出した表
         """
-        tbl = Table()
+        tbl = type(self)()
         for row in self._rows:
             tbl.row_add(row[start_index:end_index])
         return tbl

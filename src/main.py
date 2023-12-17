@@ -1,94 +1,23 @@
 #!/usr/bin/env python3
-import io
 import json
 import sys
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
 import click
 
-from src.common import textfile_read, textfile_read_stream, textfile_write
-from src.csv import csv_file_reader, csv_file_writer, csv_reader
-from src.table_utl import column_exclusive_index_group, column_fill_index, column_merge_index_group, table_sort
-
-
-@dataclass
-class CsvFileTypeInfo:
-    """!
-    @brief CSVファイルの種別情報
-    """
-
-    type_name: str
-    header_lines: list[str] = field(default_factory=list)
-    column_count: int = 0
-
-
-def csv_filetype_read(csv_info_path: Path) -> CsvFileTypeInfo:
-    """!
-    @brief CSVファイルの種別を読み込む
-    @param csv_info_path CSV情報ファイル
-    @return CSVファイルの種別
-    """
-    lines = textfile_read(csv_info_path)
-    #
-    type_name = ""
-    if csv_info_path.name.endswith("_header.csv"):
-        type_name = csv_info_path.name[: -len("_header.csv")]
-    else:
-        type_name = csv_info_path.stem
-    #
-    tbl = csv_reader(io.StringIO("".join(lines)))
-    column_count = len(tbl._rows[0])
-    #
-    csv_type = CsvFileTypeInfo(type_name=type_name, header_lines=lines, column_count=column_count)
-    return csv_type
-
-
-def csv_filetype_list_read(csv_info_dir_path: Path) -> list[CsvFileTypeInfo]:
-    """!
-    @brief CSVファイルの種別を読み込む
-    @param csv_info_dir_path CSV情報ファイルのディレクトリ
-    @return CSVファイルの種別のリスト。ヘッダ行の長い順にソートされている。
-    """
-    # CSV種別のリストを作成
-    csv_type_list: list[CsvFileTypeInfo] = []
-    for file_path in csv_info_dir_path.glob("*_header.csv"):
-        csv_type = csv_filetype_read(file_path)
-        csv_type_list.append(csv_type)
-    # CSV種別のリストをヘッダ行の長い順にソート※1行目が同一の場合に間違って判定しないようにするため
-    csv_type_list.sort(key=lambda x: len(x.header_lines), reverse=True)
-    return csv_type_list
-
-
-def csv_filetype_detect(csv_type_list: list[CsvFileTypeInfo], file_path: Path) -> Optional[CsvFileTypeInfo]:
-    """!
-    @brief CSVファイルの種別を判定する
-    @param csv_type_list CSVファイルの種別のリスト
-    @param file_path CSVファイルのパス
-    @retval CSVファイルの種別
-    @retval None 判定できない
-    """
-    # ファイルの読み込み
-    lines = textfile_read(file_path, line_max=len(csv_type_list[0].header_lines))
-    # ファイルの種別判定
-    return csv_filetype_detect_lines(csv_type_list, lines)
-
-
-def csv_filetype_detect_lines(csv_type_list: list[CsvFileTypeInfo], lines: list[str]) -> Optional[CsvFileTypeInfo]:
-    """!
-    @brief CSVファイルの種別を判定する
-    @param csv_type_list CSVファイルの種別のリスト
-    @param lines 判定するヘッダ行※改行コードを含むこと
-    @retval CSVファイルの種別
-    @retval None 判定できない
-    """
-    # ファイルの種別判定
-    for csv_type in csv_type_list:
-        header_lines = csv_type.header_lines
-        if lines[0 : len(header_lines)] == header_lines:
-            return csv_type
-    return None
+from src.csv import csv_file_reader, csv_file_writer
+from src.table_utl import (
+    CsvReportInfo,
+    column_exclusive_index_group,
+    column_fill_index,
+    column_merge_index_group,
+    csv_filetype_detect,
+    csv_filetype_list_read,
+    csv_filetype_read,
+    table_report,
+    table_sort,
+)
 
 
 def option_path(input: Optional[str], output: Optional[str]) -> tuple[Optional[Path], Optional[Path]]:
@@ -125,7 +54,7 @@ def option_value_list(value_list: str) -> list[str]:
     return [v for v in value_list[1:-1].split(",")]
 
 
-def custom_group_index_list(ctx: click.core.Context, param: click.Option, value: tuple[str]):
+def custom_group_index_list(ctx: click.core.Context, param: click.Option, value: tuple[str, ...]):
     """!
     @brief 独自のチェックを行う関数。グループインデックスリストのチェックを行う。
     """
@@ -169,11 +98,7 @@ def column_add(input: Optional[str], output: Optional[str], column: int) -> int:
     input_path, output_path = option_path(input, output)
     # 実行
     tbl = csv_file_reader(input_path)
-    for columns in tbl._rows:
-        if column < 0:
-            columns.append("")
-        else:
-            columns.insert(column, "")
+    tbl.table_column_add(column)
     csv_file_writer(output_path, tbl)
     return 0
 
@@ -191,8 +116,7 @@ def column_del(input: Optional[str], output: Optional[str], column: int) -> int:
     input_path, output_path = option_path(input, output)
     # 実行
     tbl = csv_file_reader(input_path)
-    for columns in tbl._rows:
-        del columns[column]
+    tbl.table_column_del(column)
     csv_file_writer(output_path, tbl)
     return 0
 
@@ -264,7 +188,7 @@ def column_fill(input: Optional[str], output: Optional[str], column: int, value:
 )
 @click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
 def column_merge(
-    input: Optional[str], output: Optional[str], column_key: str, column_group: tuple[str], header: int
+    input: Optional[str], output: Optional[str], column_key: str, column_group: tuple[str, ...], header: int
 ) -> int:
     """!
     @brief カラムを排他
@@ -361,7 +285,7 @@ def column_sort(
 @click.command(help="CSVファイルの種別を判定")
 @click.option("--csv-info-dir", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
 @click.argument("files", type=str, nargs=-1, required=True)
-def csv_filetype(csv_info_dir: str, files: tuple[str]) -> int:
+def csv_filetype(csv_info_dir: str, files: tuple[str, ...]) -> int:
     """!
     @brief CSVファイルの種別を判定する
     @retval 0 正常終了
@@ -397,21 +321,10 @@ def csv_header_add(input: Optional[str], output: Optional[str], add_header: str)
     """
     input_path, output_path = option_path(input, output)
     add_header_path = Path(add_header)
-    # 追加するCSVヘッダファイルを読み込む
-    add_csv_filetype = csv_filetype_read(add_header_path)
-    header_tbl = csv_file_reader(add_header_path)
-    # 入力ファイルを読み込む
+    # 実行
+    add_csv_filetype = csv_filetype_read(add_header_path)  # 追加するCSVヘッダファイルを読み込む
     tbl = csv_file_reader(input_path)
-    # 追加するCSVヘッダとカラム数が一致するか確認
-    if tbl.column_count() != add_csv_filetype.column_count:
-        print(f"追加するCSVヘッダとカラム数が一致しません。")
-        return 1
-    #
-    # textfile_write(output_path, output_csv_filetype.header_lines)  # 新しいヘッダを書き込む
-    # textfile_write(
-    #    output_path, input_lines, append=True, skip_line_count=len(csv_filetype.header_lines)
-    # )  # 入力ファイルのデータ行を追記
-    tbl._header_rows = header_tbl._rows  # ヘッダを追加
+    tbl.table_header_add(add_csv_filetype)
     csv_file_writer(output_path, tbl)
 
     return 0
@@ -432,22 +345,11 @@ def csv_header_change(input: Optional[str], output: Optional[str], input_header:
     # CSVヘッダファイルの種別を読み込む
     input_csv_filetype = csv_filetype_read(Path(input_header))
     output_csv_filetype = csv_filetype_read(Path(output_header))
-    # 入力ファイルを読み込む※標準入力の場合があるのですべて読み込む
-    input_lines = textfile_read(input_path)
-    # 入力ファイルのヘッダ種別を確認
-    csv_filetype = csv_filetype_detect_lines([input_csv_filetype], input_lines)
-    if csv_filetype is None:
-        print(f"入力ファイルの種別が一致しません。")
-        return 1
-    # 変更後CSVヘッダのカラム数が一致するか確認
-    if input_csv_filetype.column_count != output_csv_filetype.column_count:
-        print(f"変更後CSVヘッダのカラム数が一致しません。")
-        return 1
-    #
-    textfile_write(output_path, output_csv_filetype.header_lines)  # 新しいヘッダを書き込む
-    textfile_write(
-        output_path, input_lines, append=True, skip_line_count=len(csv_filetype.header_lines)
-    )  # 入力ファイルのデータ行を追記
+    # 実行
+    tbl = csv_file_reader(input_path, csv_filetype=input_csv_filetype)
+    tbl.table_header_del()  # ヘッダを削除
+    tbl.table_header_add(output_csv_filetype)  # 新しいヘッダを追加
+    csv_file_writer(output_path, tbl)
     return 0
 
 
@@ -462,31 +364,17 @@ def csv_header_del(input: Optional[str], output: Optional[str], header: int) -> 
     @retval 1 異常終了
     """
     input_path, output_path = option_path(input, output)
-    # 入力ファイルを読み込む※標準入力の場合があるのですべて読み込む
-    input_lines = textfile_read(input_path)
-    #
-    textfile_write(output_path, input_lines, skip_line_count=header)  # 入力ファイルのデータ行を出力
+    # 実行
+    tbl = csv_file_reader(input_path)
+    tbl.table_header_del(header_count=header)
+    csv_file_writer(output_path, tbl)
     return 0
-
-
-@dataclass
-class CsvReportInfo:
-    """!
-    @brief CSVファイルの情報
-    """
-
-    file_path: str
-    csv_type_name: Optional[str] = None
-    header_row_count: Optional[int] = None
-    column_count_min: int = 0
-    column_count_max: int = 0
-    row_count: int = 0
 
 
 @click.command(help="CSVファイルの情報を表示")
 @click.option("--csv-info-dir", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
 @click.argument("files", type=str, nargs=-1, required=True)
-def csv_report(csv_info_dir: str, files: tuple[str]) -> int:
+def csv_report(csv_info_dir: str, files: tuple[str, ...]) -> int:
     """!
     @brief CSVファイルの情報を表示する
     @retval 0 正常終了
@@ -498,35 +386,12 @@ def csv_report(csv_info_dir: str, files: tuple[str]) -> int:
     if len(csv_type_list) == 0:
         print("CSV情報ファイルが見つかりません。", file=sys.stderr)
         return 1
-    # ファイルの種別判定
+    # ファイルのレポートを作成
     csv_report_info_list: list[CsvReportInfo] = []
     for file in files:
         file_path = Path(file)
         #
-        csv_type_name: Optional[str] = None
-        header_row_count = None
-        csv_type = csv_filetype_detect(csv_type_list, file_path)
-        if csv_type is not None:
-            csv_type_name = csv_type.type_name
-            header_row_count = len(csv_type.header_lines)
-        #
-        tbl = csv_file_reader(file_path)
-        column_count_min = sys.maxsize
-        column_count_max = -1
-        row_count = tbl.row_count()
-        for columns in tbl._rows:
-            column_count = len(columns)
-            column_count_min = min(column_count_min, column_count)
-            column_count_max = max(column_count_max, column_count)
-        # ファイルの情報を登録
-        report_info = CsvReportInfo(
-            file_path=file_path.as_posix(),
-            csv_type_name=csv_type_name,
-            header_row_count=header_row_count,
-            column_count_min=column_count_min,
-            column_count_max=column_count_max,
-            row_count=row_count,
-        )
+        report_info = table_report(csv_type_list, file_path)
         csv_report_info_list.append(report_info)
     # ファイルの情報をJSON形式で表示
     print(json.dumps([x.__dict__ for x in csv_report_info_list], indent=2))

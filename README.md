@@ -111,8 +111,7 @@ poetry run csv_preprocessor csv-header-change --input test_data/header1/3x3.csv 
 CSVファイルのヘッダを削除する。
 
 ```shell
-poetry run csv_preprocessor csv-header-del -i test_data/header1/3x3.cs
-v --header 1
+poetry run csv_preprocessor csv-header-del -i test_data/header1/3x3.csv --header 1
 ```
 
 ### CSVファイルの情報を出力(csv-report)
