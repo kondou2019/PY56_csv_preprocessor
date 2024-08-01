@@ -106,17 +106,19 @@ def column_add(input: Optional[str], output: Optional[str], column: int) -> int:
 @click.command(help="カラムを削除")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
-@click.option("--column", type=int, required=True, help="削除するカラム(インデックス)")
-def column_del(input: Optional[str], output: Optional[str], column: int) -> int:
+@click.option("--column", callback=custom_index_list, required=True, type=str, help="削除するカラムのインデックスリスト。[index[,...]]")
+def column_del(input: Optional[str], output: Optional[str], column: str) -> int:
     """!
     @brief カラムを削除
     @retval 0 正常終了
     @retval 1 異常終了
     """
     input_path, output_path = option_path(input, output)
+    column_index_list = option_index_list(column)
     # 実行
     tbl = csv_file_reader(input_path)
-    tbl.table_column_del(column)
+    for column in sorted(column_index_list, reverse=True):  # インデックスの大きい順に削除する
+        tbl.table_column_del(column)
     csv_file_writer(output_path, tbl)
     return 0
 

@@ -18,7 +18,7 @@ poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column -1
 カラムを削除する。
 
 ```shell
-poetry run csv_preprocessor column-del -i test_data/header0/3x3.csv --column 0
+poetry run csv_preprocessor column-del -i test_data/header0/3x3.csv --column [0,1]
 ```
 
 ### カラムを排他(column-exclusive)
