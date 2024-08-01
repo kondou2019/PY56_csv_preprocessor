@@ -89,7 +89,8 @@ def custom_value_list(ctx: click.core.Context, param: click.Option, value: Optio
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--column", type=int, required=True, help="追加するカラム(インデックス)。インデックスの前に追加する。最後に追加する場合は、-1を指定する。")
-def column_add(input: Optional[str], output: Optional[str], column: int) -> int:
+@click.option("--column-count", type=int, default=1, show_default=True, help="追加するカラム数")
+def column_add(input: Optional[str], output: Optional[str], column: int, column_count: int) -> int:
     """!
     @brief カラムを追加
     @retval 0 正常終了
@@ -98,7 +99,8 @@ def column_add(input: Optional[str], output: Optional[str], column: int) -> int:
     input_path, output_path = option_path(input, output)
     # 実行
     tbl = csv_file_reader(input_path)
-    tbl.table_column_add(column)
+    for _i in range(column_count):
+        tbl.table_column_add(column)
     csv_file_writer(output_path, tbl)
     return 0
 
