@@ -51,10 +51,15 @@ poetry run csv_preprocessor column-merge -i tmp/5x5h1_ex.csv --header 1 --column
 
 ### カラムを移動(column-move)
 
-カラムを移動する。
+カラムを移動する。  
+--fromで指定したインデックスのカラムを取出してから--toで指定したインデックスに追加します。
+そのため--toで指定するインデックスは、--fromで指定したカラムが無くなった後のインデックスを指定します。
 
 ```shell
-poetry run csv_preprocessor column-move -i test_data/header0/3x3.csv --from 2 --to 0
+poetry run csv_preprocessor column-move -i test_data/header0/3x3.csv --from [2] --to [0]
+# 先頭に移動する。順番は--fromの順番になる
+ poetry run csv_preprocessor column-move -i test_data/header0/5x5.csv --from [2,3] --to [0,0]
+poetry run csv_preprocessor column-move -i test_data/header0/5x5.csv --from [3,2] --to [0,0]
 ```
 
 ### カラムを選択(column-select)

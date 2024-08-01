@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -209,21 +210,57 @@ def column_merge(
     return 0
 
 
+@dataclass
+class ColumnMoveFromTo:
+    index: int  # --fromオプションの順番
+    from_: int
+    to: int
+    column_list: list[str]
+
+
 @click.command(help="カラムを移動")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
-@click.option("--from", "from_", type=int, required=True, help="移動元のカラム(インデックス)")
-@click.option("--to", type=int, required=True, help="移動先のカラム(インデックス)")
-def column_move(from_: int, to: int, input: Optional[str], output: Optional[str]) -> int:
+@click.option(
+    "--from", "from_", callback=custom_index_list, required=True, type=str, help="移動元のカラムのインデックスリスト。[index[,...]]"
+)
+@click.option(
+    "--to",
+    callback=custom_index_list,
+    required=True,
+    type=str,
+    help="移動先のカラムのインデックスリスト。--fromで削除された後のインデックスを指定する。[index[,...]]",
+)
+def column_move(from_: str, to: str, input: Optional[str], output: Optional[str]) -> int:
     """!
     @brief カラムを移動
     @retval 0 正常終了
     @retval 1 異常終了
     """
     input_path, output_path = option_path(input, output)
+    from_column_index_list = option_index_list(from_)
+    to_column_index_list = option_index_list(to)
+    if len(from_column_index_list) != len(to_column_index_list):
+        print("--fromと--toに指定したインデックスの数が一致しません。", file=sys.stderr)
+        return 1
+    #
+    column_move_from_to: list[ColumnMoveFromTo] = []
+    for i in range(len(from_column_index_list)):
+        from_index = from_column_index_list[i]
+        to_index = to_column_index_list[i]
+        ft = ColumnMoveFromTo(index=i, from_=from_index, to=to_index, column_list=[])
+        column_move_from_to.append(ft)
     # 実行
     tbl = csv_file_reader(input_path)
-    tbl.column_move(from_index=from_, to_index=to)
+    # tbl.column_move(from_index=from_, to_index=to)
+    ## 削除
+    for ft in sorted(column_move_from_to, key=lambda x: x.from_, reverse=True):  # インデックスの大きい順に削除する
+        column_list = tbl.column_remove(ft.from_)
+        ft.column_list = column_list
+    ## 追加;インデックスの大きい方から追加する。インデックスが同じ場合は--fromの順番を維持する
+    for ft in sorted(column_move_from_to, key=lambda x: (x.to, x.index), reverse=True):
+        tbl.column_insert(ft.to, ft.column_list)
+
     csv_file_writer(output_path, tbl)
     return 0
 

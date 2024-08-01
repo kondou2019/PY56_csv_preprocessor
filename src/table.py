@@ -77,18 +77,21 @@ class Table:
         """!
         @brief 列を移動する
         @param from_index 移動元の列
-        @param to_index 移動先の列
+        @param to_index 移動先の列※from_indexで削除後のインデックス。
         """
         for row in self._rows:
             row.insert(to_index, row.pop(from_index))
 
-    def column_remove(self: Self, column_index: int) -> None:
+    def column_remove(self: Self, column_index: int) -> list[str]:
         """!
         @brief 指定した列を削除する
         @param column_index 削除する列
+        @return 削除した列
         """
+        column_list: list[str] = []
         for row in self._rows:
-            row.pop(column_index)
+            column_list.append(row.pop(column_index))
+        return column_list
 
     def row_add(self: Self, row: list[str]) -> None:
         """!
