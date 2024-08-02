@@ -96,3 +96,46 @@ def textfile_write_stream(
             line += "\n"
         o_stream.write(line)
     return
+
+
+def split_csv_string_no_normalize(input_string: str, *, delimiter: str = ",") -> list[str]:
+    """!
+    @brief 文字列を区切り文字で分割する。分割文字列の内容をそのまま
+    @param input_string 分割文字列
+    @param delimiter 区切り文字
+    @return 分割された文字列のリスト
+    @note
+    ・ダブルクォート記号で囲むと区切り記号を無視する
+    ・ダブルクォート記号も文字に含む
+    """
+    result: list[str] = []
+    current: list[str] = []  # 1文字のリスト
+    in_quotes: bool = False
+    i: int = 0
+
+    if len(input_string) == 0:  # 入力文字列なし
+        return []
+    #
+    while i < len(input_string):
+        char: str = input_string[i]
+        if char == '"':
+            current.append(char)  # クォート文字も含む
+            if in_quotes and i + 1 < len(input_string) and input_string[i + 1] == '"':
+                # ダブルクォート内の連続するダブルクォートはエスケープされたダブルクォートとして扱う
+                current.append('"')
+                i += 1
+            else:
+                # クォートの開始または終了
+                in_quotes = not in_quotes
+        elif char == delimiter and not in_quotes:
+            # クォート外の区切り文字
+            result.append("".join(current))
+            current = []
+        else:
+            # 通常の文字
+            current.append(char)
+        i += 1
+    # 最後のフィールドを追加
+    result.append("".join(current))
+
+    return result

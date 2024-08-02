@@ -3,6 +3,7 @@ from io import TextIOWrapper
 from pathlib import Path
 from typing import Optional
 
+from src.common import split_csv_string_no_normalize
 from src.table import *
 
 
@@ -17,7 +18,8 @@ def csv_reader(i_stream: TextIOWrapper, *, header: int = 0, csv_filetype: Option
     rows: list[list[str]] = []
     for line in i_stream:
         line = line.rstrip("\n")
-        columns = line.split(",")
+        # columns = line.split(",")
+        columns = split_csv_string_no_normalize(line)
         rows.append(columns)
     # csv_filetypeのヘッダ行数が優先
     if csv_filetype is not None:
