@@ -163,19 +163,21 @@ def column_exclusive(input: Optional[str], output: Optional[str], column_group: 
 @click.command(help="カラムの欠損値を置換(穴埋め)")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
-@click.option("--column", type=int, required=True, help="対象のカラム(インデックス)")
+@click.option("--column", callback=custom_index_list, required=True, type=str, help="対象のカラムのインデックスリスト。[index[,...]]")
 @click.option("--value", type=str, default="", show_default=True, help="置換する値")
 @click.option("--ffill", is_flag=True, help="前の行からの穴埋め")
-def column_fill(input: Optional[str], output: Optional[str], column: int, value: str, ffill: bool) -> int:
+def column_fill(input: Optional[str], output: Optional[str], column: str, value: str, ffill: bool) -> int:
     """!
     @brief カラムの欠損値を置換(穴埋め)
     @retval 0 正常終了
     @retval 1 異常終了
     """
     input_path, output_path = option_path(input, output)
+    column_index_list = option_index_list(column)
     # 実行
     tbl = csv_file_reader(input_path)
-    column_fill_index(tbl, column, value, ffill=ffill)
+    for column in column_index_list:
+        column_fill_index(tbl, column, value, ffill=ffill)
     csv_file_writer(output_path, tbl)
     return 0
 

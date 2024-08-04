@@ -37,9 +37,10 @@ poetry run csv_preprocessor column-exclusive -i test_data/header1/5x5.csv --head
 カラムの欠損値を置換(穴埋め)する。
 
 ```shell
-poetry run csv_preprocessor column-fill -i test_data/header0/3x2.csv --column 1 --value x
-poetry run csv_preprocessor column-fill -i test_data/header0/3x2.csv --column 1 --ffill
-poetry run csv_preprocessor column-fill -i test_data/header0/3x2.csv --column 1 --value x --ffill
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x
+poetry run csv_preprocessor column-fill -i test_data/header0/5x5_none.csv --column [1,3] --value x
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --ffill
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --ffill
 ```
 
 ### カラムをマージ(column-merge)
