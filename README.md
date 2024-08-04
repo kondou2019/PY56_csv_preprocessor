@@ -9,10 +9,11 @@ CSVファイルの前処理を行う。
 カラムを追加する。
 
 ```shell
-poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column 0
-poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column 0 --column-count 3
+poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column [0]
+poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column [0,1]
+poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column [0] --column-count 3
 # 最後に追加
-poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column -1
+poetry run csv_preprocessor column-add -i test_data/header0/3x3.csv --column [-1]
 ```
 
 ### カラムを削除(column-del)

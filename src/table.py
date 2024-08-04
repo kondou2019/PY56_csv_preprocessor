@@ -159,17 +159,19 @@ class Table:
         del self._rows[start_row_index:end_row_index]
         return removed_items
 
-    def table_column_add(self: Self, column_index: int) -> None:
+    def table_column_add(self: Self, column_index: int, *, column_count: int = 1) -> None:
         """!
         @brief カラムを追加
         @param column_index 追加するカラム(インデックス)。インデックスの前に追加する。最後に追加する場合は、-1を指定する。
+        @param column_count 追加するカラム数
         """
-        if column_index < 0:
-            for columns in self._rows:
-                columns.append("")
-        else:
-            for columns in self._rows:
-                columns.insert(column_index, "")
+        for _i in range(column_count):
+            if column_index < 0:
+                for columns in self._rows:
+                    columns.append("")
+            else:
+                for columns in self._rows:
+                    columns.insert(column_index, "")
 
     def table_column_del(self: Self, column_index: int) -> None:
         """!
