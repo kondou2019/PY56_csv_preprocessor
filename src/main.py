@@ -21,6 +21,8 @@ from src.table_utl import (
     table_sort,
 )
 
+__VERSION__ = "0.3.255"
+
 
 def option_path(input: Optional[str], output: Optional[str]) -> tuple[Optional[Path], Optional[Path]]:
     """!
@@ -459,7 +461,7 @@ def cmd_csv_report(csv_info_dir: str, files: tuple[str, ...]) -> int:
 
 # サブコマンドをメインコマンドに追加
 @click.group(help="CSVファイルの前処理ツール")
-@click.version_option()
+@click.version_option(version=__VERSION__)
 def cli():
     pass
 
