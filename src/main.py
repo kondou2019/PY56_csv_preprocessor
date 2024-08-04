@@ -460,6 +460,17 @@ cli.add_command(csv_header_change)
 cli.add_command(csv_header_del)
 cli.add_command(csv_report)
 
-if __name__ == "__main__":
+
+def main(argv: list[str]) -> int:
+    """!
+    @brief 主入口点
+    @param argv コマンドラインオプション
+    @retval 0 成功
+    @retval 1 失敗
+    """
     rc = cli(standalone_mode=False)
-    sys.exit(rc)
+    return rc
+
+
+# if __name__ == "__main__":
+#    sys.exit(main(sys.argv))

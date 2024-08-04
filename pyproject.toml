@@ -24,7 +24,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-csv_preprocessor = "src.main:cli"
 tool_csv = "tests.tool_csv:cli"
 
 [tool.black]
