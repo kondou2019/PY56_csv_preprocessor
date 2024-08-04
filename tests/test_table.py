@@ -54,7 +54,9 @@ def test_column_move_0102N():  # 前に移動
 
 def test_column_remove_0101N():
     tbl = Table.create_rows(copy.deepcopy(TABLE_3x3))
-    tbl.column_remove(column_index=1)
+    result = tbl.column_remove(column_index=1)
+    assert result == ["b", "2", "5"]
+
     assert tbl._rows[0] == ["a", "c"]
     assert tbl._rows[1] == ["1", "3"]
     assert tbl._rows[2] == ["4", "6"]
@@ -127,7 +129,9 @@ def test_row_move_0102N():  # 前に移動
 
 def test_row_remove_0101N():
     tbl = Table.create_rows(copy.deepcopy(TABLE_3x3))
-    tbl.row_remove(row_index=1)
+    result = tbl.row_remove(row_index=1)
+    assert result == ["1", "2", "3"]
+
     assert tbl._rows[0] == ["a", "b", "c"]
     assert tbl._rows[1] == ["4", "5", "6"]
 
