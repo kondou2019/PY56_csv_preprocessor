@@ -13,6 +13,7 @@ from src.table_utl import (
     column_exclusive_index_group,
     column_fill_index,
     column_merge_index_group,
+    column_quote,
     csv_filetype_detect,
     csv_filetype_list_read,
     csv_filetype_read,
@@ -86,7 +87,7 @@ def custom_value_list(ctx: click.core.Context, param: click.Option, value: Optio
     return value
 
 
-@click.command(help="カラムを追加")
+@click.command(name="column-add", help="カラムを追加")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option(
@@ -97,9 +98,8 @@ def custom_value_list(ctx: click.core.Context, param: click.Option, value: Optio
     help="追加するカラムのインデックスリスト。インデックスの前に追加する。最後に追加する場合は、-1を指定する。[index[,...]]",
 )
 @click.option("--column-count", type=int, default=1, show_default=True, help="追加するカラム数")
-def column_add(input: Optional[str], output: Optional[str], column: str, column_count: int) -> int:
+def cmd_column_add(input: Optional[str], output: Optional[str], column: str, column_count: int) -> int:
     """!
-    @brief カラムを追加
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -113,13 +113,12 @@ def column_add(input: Optional[str], output: Optional[str], column: str, column_
     return 0
 
 
-@click.command(help="カラムを削除")
+@click.command(name="column-del", help="カラムを削除")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--column", callback=custom_index_list, required=True, type=str, help="削除するカラムのインデックスリスト。[index[,...]]")
-def column_del(input: Optional[str], output: Optional[str], column: str) -> int:
+def cmd_column_del(input: Optional[str], output: Optional[str], column: str) -> int:
     """!
-    @brief カラムを削除
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -133,7 +132,7 @@ def column_del(input: Optional[str], output: Optional[str], column: str) -> int:
     return 0
 
 
-@click.command(help="カラムを排他。--column-groupで指定したカラムグループを別々の行に分離する")
+@click.command(name="column-exclusive", help="カラムを排他。--column-groupで指定したカラムグループを別々の行に分離する")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option(
@@ -145,9 +144,8 @@ def column_del(input: Optional[str], output: Optional[str], column: str) -> int:
     help="カラムのインデックスリスト。2回以上指定する。[index[,...]]",
 )
 @click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
-def column_exclusive(input: Optional[str], output: Optional[str], column_group: tuple[str], header: int) -> int:
+def cmd_column_exclusive(input: Optional[str], output: Optional[str], column_group: tuple[str], header: int) -> int:
     """!
-    @brief カラムを排他
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -160,15 +158,14 @@ def column_exclusive(input: Optional[str], output: Optional[str], column_group: 
     return 0
 
 
-@click.command(help="カラムの欠損値を置換(穴埋め)")
+@click.command(name="column-fill", help="カラムの欠損値を置換(穴埋め)")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--column", callback=custom_index_list, required=True, type=str, help="対象のカラムのインデックスリスト。[index[,...]]")
 @click.option("--value", type=str, default="", show_default=True, help="置換する値")
 @click.option("--ffill", is_flag=True, help="前の行からの穴埋め")
-def column_fill(input: Optional[str], output: Optional[str], column: str, value: str, ffill: bool) -> int:
+def cmd_column_fill(input: Optional[str], output: Optional[str], column: str, value: str, ffill: bool) -> int:
     """!
-    @brief カラムの欠損値を置換(穴埋め)
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -182,7 +179,7 @@ def column_fill(input: Optional[str], output: Optional[str], column: str, value:
     return 0
 
 
-@click.command(help="カラムをマージ。column-exclusiveで排他した行をマージして元にもどす")
+@click.command(name="column-merge", help="カラムをマージ。column-exclusiveで排他した行をマージして元にもどす")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option(
@@ -201,11 +198,10 @@ def column_fill(input: Optional[str], output: Optional[str], column: str, value:
     help="カラムのインデックスリスト。2回以上指定する。[index[,...]]",
 )
 @click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
-def column_merge(
+def cmd_column_merge(
     input: Optional[str], output: Optional[str], column_key: str, column_group: tuple[str, ...], header: int
 ) -> int:
     """!
-    @brief カラムを排他
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -227,7 +223,7 @@ class ColumnMoveFromTo:
     column_list: list[str]
 
 
-@click.command(help="カラムを移動")
+@click.command(name="column-move", help="カラムを移動")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option(
@@ -240,9 +236,8 @@ class ColumnMoveFromTo:
     type=str,
     help="移動先のカラムのインデックスリスト。--fromで削除された後のインデックスを指定する。[index[,...]]",
 )
-def column_move(from_: str, to: str, input: Optional[str], output: Optional[str]) -> int:
+def cmd_column_move(from_: str, to: str, input: Optional[str], output: Optional[str]) -> int:
     """!
-    @brief カラムを移動
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -274,13 +269,33 @@ def column_move(from_: str, to: str, input: Optional[str], output: Optional[str]
     return 0
 
 
-@click.command(help="カラムを選択")
+@click.command(name="column-quote", help="カラムの値をクォートで囲む")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--column", callback=custom_index_list, required=True, type=str, help="カラムのインデックスリスト。[index[,...]]")
-def column_select(input: Optional[str], output: Optional[str], column: str) -> int:
+@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
+def cmd_column_quote(input: Optional[str], output: Optional[str], column: str, header: int) -> int:
     """!
-    @brief カラムを選択
+    @brief カラムの値をクォートで囲む
+    @retval 0 正常終了
+    @retval 1 異常終了
+    """
+    input_path, output_path = option_path(input, output)
+    column_index_list = option_index_list(column)
+    # 実行
+    tbl = csv_file_reader(input_path, header=header)
+    for column in column_index_list:
+        column_quote(tbl, column)
+    csv_file_writer(output_path, tbl)
+    return 0
+
+
+@click.command(name="column-select", help="カラムを選択")
+@click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
+@click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
+@click.option("--column", callback=custom_index_list, required=True, type=str, help="カラムのインデックスリスト。[index[,...]]")
+def cmd_column_select(input: Optional[str], output: Optional[str], column: str) -> int:
+    """!
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -293,7 +308,7 @@ def column_select(input: Optional[str], output: Optional[str], column: str) -> i
     return 0
 
 
-@click.command(help="カラムでソート")
+@click.command(name="column-sort", help="カラムでソート")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option(
@@ -311,11 +326,10 @@ def column_select(input: Optional[str], output: Optional[str], column: str) -> i
 )
 @click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
 @click.option("--reverse", is_flag=True, help="降順にソート")
-def column_sort(
+def cmd_column_sort(
     input: Optional[str], output: Optional[str], column_key: str, column_attr: Optional[str], header: int, reverse: bool
 ) -> int:
     """!
-    @brief カラムでソート
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -332,12 +346,11 @@ def column_sort(
     return 0
 
 
-@click.command(help="CSVファイルの種別を判定")
+@click.command(name="csv-filetype", help="CSVファイルの種別を判定")
 @click.option("--csv-info-dir", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
 @click.argument("files", type=str, nargs=-1, required=True)
-def csv_filetype(csv_info_dir: str, files: tuple[str, ...]) -> int:
+def cmd_csv_filetype(csv_info_dir: str, files: tuple[str, ...]) -> int:
     """!
-    @brief CSVファイルの種別を判定する
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -359,13 +372,12 @@ def csv_filetype(csv_info_dir: str, files: tuple[str, ...]) -> int:
     return 0
 
 
-@click.command(help="CSVファイルにヘッダを追加")
+@click.command(name="csv-header-add", help="CSVファイルにヘッダを追加")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--add-header", type=click.Path(exists=True), required=True, help="追加するCSVヘッダファイル")
-def csv_header_add(input: Optional[str], output: Optional[str], add_header: str) -> int:
+def cmd_csv_header_add(input: Optional[str], output: Optional[str], add_header: str) -> int:
     """!
-    @brief CSVファイルにヘッダを追加
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -380,14 +392,13 @@ def csv_header_add(input: Optional[str], output: Optional[str], add_header: str)
     return 0
 
 
-@click.command(help="CSVファイルのヘッダを変更")
+@click.command(name="csv-header-change", help="CSVファイルのヘッダを変更")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--input-header", type=click.Path(exists=True), required=True, help="変更前CSVヘッダファイル")
 @click.option("--output-header", type=click.Path(exists=True), required=True, help="変更後CSVヘッダファイル")
-def csv_header_change(input: Optional[str], output: Optional[str], input_header: str, output_header) -> int:
+def cmd_csv_header_change(input: Optional[str], output: Optional[str], input_header: str, output_header) -> int:
     """!
-    @brief CSVファイルのヘッダを変更する
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -403,13 +414,12 @@ def csv_header_change(input: Optional[str], output: Optional[str], input_header:
     return 0
 
 
-@click.command(help="CSVファイルのヘッダを削除")
+@click.command(name="csv-header-del", help="CSVファイルのヘッダを削除")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--header", type=int, required=True, help="ヘッダの行数")
-def csv_header_del(input: Optional[str], output: Optional[str], header: int) -> int:
+def cmd_csv_header_del(input: Optional[str], output: Optional[str], header: int) -> int:
     """!
-    @brief CSVファイルのヘッダを削除
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -421,12 +431,11 @@ def csv_header_del(input: Optional[str], output: Optional[str], header: int) -> 
     return 0
 
 
-@click.command(help="CSVファイルの情報を表示")
+@click.command(name="csv-report", help="CSVファイルの情報を表示")
 @click.option("--csv-info-dir", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
 @click.argument("files", type=str, nargs=-1, required=True)
-def csv_report(csv_info_dir: str, files: tuple[str, ...]) -> int:
+def cmd_csv_report(csv_info_dir: str, files: tuple[str, ...]) -> int:
     """!
-    @brief CSVファイルの情報を表示する
     @retval 0 正常終了
     @retval 1 異常終了
     """
@@ -455,19 +464,19 @@ def cli():
     pass
 
 
-cli.add_command(column_add)
-cli.add_command(column_del)
-cli.add_command(column_exclusive)
-cli.add_command(column_fill)
-cli.add_command(column_merge)
-cli.add_command(column_move)
-cli.add_command(column_select)
-cli.add_command(column_sort)
-cli.add_command(csv_filetype)
-cli.add_command(csv_header_add)
-cli.add_command(csv_header_change)
-cli.add_command(csv_header_del)
-cli.add_command(csv_report)
+cli.add_command(cmd_column_add)
+cli.add_command(cmd_column_del)
+cli.add_command(cmd_column_exclusive)
+cli.add_command(cmd_column_fill)
+cli.add_command(cmd_column_merge)
+cli.add_command(cmd_column_move)
+cli.add_command(cmd_column_select)
+cli.add_command(cmd_column_sort)
+cli.add_command(cmd_csv_filetype)
+cli.add_command(cmd_csv_header_add)
+cli.add_command(cmd_csv_header_change)
+cli.add_command(cmd_csv_header_del)
+cli.add_command(cmd_csv_report)
 
 
 def main(argv: list[str]) -> int:
