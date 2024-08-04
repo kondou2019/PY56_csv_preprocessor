@@ -8,6 +8,7 @@ from src.table_utl import (
     column_exclusive_index_group,
     column_fill_index,
     column_merge_index_group,
+    column_quote,
     table_sort,
     values_equal_index_group,
     values_non_empty,
@@ -231,6 +232,22 @@ def test_column_merge_index_group_0104B():  # カラムグループ以外が不�
     assert tbl._rows[1] == ["11", "12", "", "14", "15"]
     assert tbl._rows[2] == ["11", "", "13", "14", "99"]
     assert tbl._rows[3] == ["21", "22", "23", "24", "25"]
+
+
+def test_column_quote_0101N():
+    LOCAL_TABLE_2x2 = [
+        ["0", "a"],
+        ["1", '"b"'],
+        ["2", "c"],
+        ["3", ""],
+    ]
+    tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
+    column_quote(tbl, 1)
+    assert len(tbl._rows) == 4
+    assert tbl._rows[0] == ["0", '"a"']
+    assert tbl._rows[1] == ["1", '"b"']
+    assert tbl._rows[2] == ["2", '"c"']
+    assert tbl._rows[3] == ["3", '""']
 
 
 def test_table_sort_0101N():

@@ -179,6 +179,20 @@ def column_merge_index_group(table: Table, column_key: list[int], column_group: 
     pass
 
 
+def column_quote(table: Table, column_index: int) -> None:
+    """!
+    @brief カラムを空白で囲む
+    @param table テーブル
+    @param column_index カラムのインデックス
+    """
+    for row in table._rows:
+        column_value = row[column_index]
+        if len(column_value) > 1 and column_value[0] == '"':  # 既にクォートで囲んでいる?
+            pass
+        else:
+            row[column_index] = f'"{column_value}"'
+
+
 def csv_filetype_detect(csv_type_list: list[CsvFileTypeInfo], file_path: Path) -> Optional[CsvFileTypeInfo]:
     """!
     @brief CSVファイルの種別を判定する

@@ -64,6 +64,15 @@ poetry run csv_preprocessor column-move -i test_data/header0/3x3.csv --from [2] 
 poetry run csv_preprocessor column-move -i test_data/header0/5x5.csv --from [3,2] --to [0,0]
 ```
 
+### カラムの値をクォートで囲む(column-quote)
+
+カラムの値をクォートで囲む。
+
+```shell
+poetry run csv_preprocessor column-quote -i test_data/header0/3x3.csv --column [0]
+poetry run csv_preprocessor column-quote -i test_data/header0/3x3.csv --header 1 --column [0]
+```
+
 ### カラムを選択(column-select)
 
 指定したカラムを出力する。
