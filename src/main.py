@@ -277,18 +277,18 @@ def column_move(from_: str, to: str, input: Optional[str], output: Optional[str]
 @click.command(help="カラムを選択")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
-@click.option("--start", type=int, required=True, help="開始のカラム(インデックス)")
-@click.option("--end", type=int, required=True, help="終了のカラム(インデックス)")
-def column_select(start: int, end: int, input: Optional[str], output: Optional[str]) -> int:
+@click.option("--column", callback=custom_index_list, required=True, type=str, help="カラムのインデックスリスト。[index[,...]]")
+def column_select(input: Optional[str], output: Optional[str], column: str) -> int:
     """!
     @brief カラムを選択
     @retval 0 正常終了
     @retval 1 異常終了
     """
     input_path, output_path = option_path(input, output)
+    column_index_list = option_index_list(column)
     # 実行
     tbl = csv_file_reader(input_path)
-    new_tbl = tbl.table_select_column_range(start_index=start, end_index=end + 1)
+    new_tbl = tbl.table_select_column_list(column_index_list)
     csv_file_writer(output_path, new_tbl)
     return 0
 

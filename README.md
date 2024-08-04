@@ -66,10 +66,12 @@ poetry run csv_preprocessor column-move -i test_data/header0/5x5.csv --from [3,2
 
 ### カラムを選択(column-select)
 
-指定した範囲のカラムを出力する。
+指定したカラムを出力する。
+カラムの順番を変更することにも使用できる。
 
 ```shell
-poetry run csv_preprocessor column-select -i test_data/header0/3x3.csv --start 2 --end 3
+poetry run csv_preprocessor column-select -i test_data/header0/3x3.csv --column [1]
+poetry run csv_preprocessor column-select -i test_data/header0/3x3.csv --column [1,0,2]
 ```
 
 ### カラムでソート(column-sort)

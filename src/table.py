@@ -203,6 +203,18 @@ class Table:
         else:
             self.row_remove_multi(0, header_count)
 
+    def table_select_column_list(self: Self, column_index_list: list[int]) -> Self:
+        """!
+        @brief 指定したカラムの列を抽出する
+        @param column_index_list 抽出するカラムのインデックスのリスト
+        @return 抽出した表
+        """
+        tbl = type(self)()
+        for row in self._rows:
+            row_new = [row[i] for i in column_index_list]
+            tbl.row_add(row_new)
+        return tbl
+
     def table_select_column_range(self: Self, start_index: int, end_index: int) -> Self:
         """!
         @brief 指定した範囲の列を抽出する
