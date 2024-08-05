@@ -99,7 +99,8 @@ poetry run csv_preprocessor column-sort -i test_data/header1/5x3_sort_int.csv --
 
 ### CSVファイルの種別を判定(csv-filetype)
 
-CSVのヘッダ行からCSVファイルの種別を判定する。--csv-info-dirディレクトリにヘッダ行だけを記述したファイルを格納する。FILESで指定したファイルのヘッダ行と一致する場合ファイル名をファイル種別として出力する。
+CSVのヘッダ行からCSVファイルの種別を判定する。--csv-info-dirディレクトリにヘッダ行だけを記述したファイルを格納する。FILESで指定したファイルのヘッダ行と一致する場合ファイル名をファイル種別として出力する。  
+CSVヘッダ情報ファイルは、ファイルの名のサフィックスが*_header.csvであること。
 
 ```shell
 $ poetry run csv_preprocessor csv-filetype --csv-info-dir test_data/csv_info test_data/header1/2x2.csv test_data/header1/3x3.csv test_data/header1/5x5.csv test_data/header2/3x3.csv

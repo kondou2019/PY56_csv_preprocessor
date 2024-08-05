@@ -349,7 +349,9 @@ def cmd_column_sort(
 
 
 @click.command(name="csv-filetype", help="CSVファイルの種別を判定")
-@click.option("--csv-info-dir", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ")
+@click.option(
+    "--csv-info-dir", type=click.Path(exists=True), required=True, help="CSV情報ファイルのディレクトリ。ヘッダ情報ファイルは*_header.csvであること"
+)
 @click.argument("files", type=str, nargs=-1, required=True)
 def cmd_csv_filetype(csv_info_dir: str, files: tuple[str, ...]) -> int:
     """!
