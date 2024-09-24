@@ -135,6 +135,8 @@ CSVファイルのヘッダを削除する。
 
 ```shell
 poetry run csv_preprocessor csv-header-del -i test_data/header1/3x3.csv --header 1
+# ヘッダファイル指定
+poetry run csv_preprocessor csv-header-del -i test_data/header1/3x3.csv --input-header test_data/csv_info/1x3_header.csv
 ```
 
 ### CSVファイルの情報を出力(csv-report)

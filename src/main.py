@@ -9,6 +9,7 @@ import click
 
 from src.csv import csv_file_reader, csv_file_writer
 from src.table_utl import (
+    CsvFileTypeInfo,
     CsvReportInfo,
     column_exclusive_index_group,
     column_fill_index,
@@ -424,16 +425,31 @@ def cmd_csv_header_change(input: Optional[str], output: Optional[str], input_hea
 @click.command(name="csv-header-del", help="CSVファイルのヘッダを削除")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
-@click.option("--header", type=int, required=True, help="ヘッダの行数")
-def cmd_csv_header_del(input: Optional[str], output: Optional[str], header: int) -> int:
+@click.option("--input-header", type=click.Path(exists=True), help="変更前CSVヘッダファイル")
+@click.option("--header", type=int, help="ヘッダの行数")
+def cmd_csv_header_del(
+    input: Optional[str], output: Optional[str], input_header: Optional[str], header: Optional[int]
+) -> int:
     """!
     @retval 0 正常終了
     @retval 1 異常終了
     """
     input_path, output_path = option_path(input, output)
+    # CSVヘッダファイルの種別を読み込む
+    header_count = 0
+    input_csv_filetype: Optional[CsvFileTypeInfo] = None
+    if input_header is not None:
+        input_csv_filetype = csv_filetype_read(Path(input_header))
+        header_count = input_csv_filetype.header_row_count
+    elif header is not None:
+        header_count = header
+    else:
+        print("--input-header,--headerオプションのどちらかを指定してください。", file=sys.stderr)
+        return 1
     # 実行
-    tbl = csv_file_reader(input_path)
-    tbl.table_header_del(header_count=header)
+    tbl = csv_file_reader(input_path, csv_filetype=input_csv_filetype)
+
+    tbl.table_header_del(header_count=header_count)
     csv_file_writer(output_path, tbl)
     return 0
 
