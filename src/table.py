@@ -53,7 +53,10 @@ class Table:
         """!
         @brief カラムの数を取得する
         @return カラム数
+        @note レコードが無い場合は、0になります。
         """
+        if self.row_count() == 0:
+            return 0
         return len(self._rows[0])
 
     def column_insert(self: Self, column_index: int, column: list[str]) -> None:
@@ -188,8 +191,9 @@ class Table:
         @exception ValueError 追加するCSVヘッダとカラム数が一致しない場合
         """
         # 追加するCSVヘッダとカラム数が一致するか確認
-        if self.column_count() != csv_filetype.header_column_count:
-            raise ValueError("追加するCSVヘッダとカラム数が一致しません。")
+        if self.row_count() != 0:  # データ行がある場合は、ヘッダのカラム数と一致しているかチェックする
+            if self.column_count() != csv_filetype.header_column_count:
+                raise ValueError("追加するCSVヘッダとカラム数が一致しません。")
         #
         self._header_rows = csv_filetype._header_rows  # ヘッダを追加
 
