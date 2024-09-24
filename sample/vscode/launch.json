@@ -1,0 +1,89 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: column-exclusive",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "column-exclusive",
+                "-i", "test_data/header0/3x3.csv",
+                "--column-group", "[1]",
+                "--column-group", "[2]"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: column-merge",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "column-merge",
+                "-i", "test_data/header0/3x3.csv",
+                "--column-key", "[0]",
+                "--column-group", "[1]",
+                "--column-group", "[2]"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: column-move",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "column-move",
+                "-i", "test_data/header0/5x5.csv",
+                "--from", "[3,2]",
+                "--to", "[0,1]"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: column-exclusive",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "column-exclusive",
+                "-i", "test_data/header0/3x3.csv",
+                "--column-group", "[1]",
+                "--column-group", "[2]"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: csv-header-add",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "csv-header-add",
+                "-i", "test_data/header0/3x3.csv",
+                "--add-header", "test_data/csv_info/1x3_header.csv"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: sort",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "sort",
+                "-i", "test_data/header0/3x3.csv",
+                "--column-key", "[0]",
+                //"--column-attr", "[int]",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
