@@ -22,7 +22,7 @@ from src.table_utl import (
     table_sort,
 )
 
-__VERSION__ = "0.5.0"
+__VERSION__ = "0.5.255"
 
 
 def option_path(input: Optional[str], output: Optional[str]) -> tuple[Optional[Path], Optional[Path]]:
