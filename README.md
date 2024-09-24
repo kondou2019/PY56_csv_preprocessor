@@ -41,6 +41,8 @@ poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --colu
 poetry run csv_preprocessor column-fill -i test_data/header0/5x5_none.csv --column [1,3] --value x
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --ffill
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --ffill
+# ヘッダ行をスキップ
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --header 1
 ```
 
 ### カラムをマージ(column-merge)

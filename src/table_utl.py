@@ -112,16 +112,17 @@ def column_exclusive_index_group(table: Table, column_group: list[list[int]]):
     pass
 
 
-def column_fill_index(table: Table, column_index: int, value: str, *, ffill: bool = False):
+def column_fill_index(table: Table, column_index: int, value: str, *, ffill: bool = False, header: int = 0):
     """!
     @brief カラムの空白を埋める
     @param table テーブル
     @param column_index カラムのインデックス
     @param value 埋める文字列
     @param ffill 前方から埋める場合はTrue
+    @param header ヘッダ行数
     """
     value_prev = value
-    for row in table._rows:
+    for row in table._rows[header:]:
         column_value = row[column_index]
         if column_value == "":
             if ffill:
