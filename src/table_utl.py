@@ -1,5 +1,6 @@
 import io
 import itertools
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -112,7 +113,32 @@ def column_exclusive_index_group(table: Table, column_group: list[list[int]]):
     pass
 
 
-def column_fill_index(table: Table, column_index: int, value: str, *, ffill: bool = False, header: int = 0):
+def check_row_if(v_left: str, operator: str, v_right: str, *, row_if: Optional[str] = None) -> bool:
+    """!
+    @brief fillの実行を判定する
+    @param v_left 左辺値
+    @param operator 比較演算子
+    @param v_right 右辺値
+    @retval True 実行する
+    @retval False 実行しない
+    """
+    if operator == "!=":
+        if v_left != v_right:
+            return True
+    elif operator == "==":
+        if v_left == v_right:
+            return True
+    else:
+        raise Exception(f"--row-ifの指定が正しくありません。未サポート演算子。--raw-if {row_if}")
+    return False
+
+
+#
+
+
+def column_fill_index(
+    table: Table, column_index: int, value: str, *, ffill: bool = False, header: int = 0, row_if: Optional[str] = None
+):
     """!
     @brief カラムの空白を埋める
     @param table テーブル
@@ -120,11 +146,31 @@ def column_fill_index(table: Table, column_index: int, value: str, *, ffill: boo
     @param value 埋める文字列
     @param ffill 前方から埋める場合はTrue
     @param header ヘッダ行数
+    @param row_if 置換を実行するかを行のカラムの値で判定
     """
+    # row_ifのセットアップ
+    if row_if is not None:
+        match = re.match(r"(\d+)([!=><]=?)(.*)", row_if)
+        if match is None:
+            raise Exception(f"--row-ifの指定が正しくありません。--raw-if {row_if}")
+        row_if_index = int(match.group(1))  # 先頭の数字部分
+        row_if_operator = match.group(2)  # 比較演算子
+        row_if_rest = match.group(3)  # 残りの文字列
+        # 指定値の正規化
+        row_if_index = int(row_if_index)
+        ## 右辺の正規化
+        match = re.search(r'(["\'])(.*?)\1', row_if_rest)
+        if match:
+            row_if_rest = match.group(2)  # クォート内の文字列を取得
+    #
     value_prev = value
     for row in table._rows[header:]:
         column_value = row[column_index]
         if column_value == "":
+            if row_if is not None:
+                v_left = row[row_if_index]
+                if check_row_if(v_left, row_if_operator, row_if_rest, row_if=row_if) == False:
+                    continue
             if ffill:
                 row[column_index] = value_prev
             else:

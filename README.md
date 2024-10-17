@@ -43,6 +43,9 @@ poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --colu
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --ffill
 # ヘッダ行をスキップ
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --header 1
+
+# カラム4が空で、カラム1が空ではない場合にカラム4にxをセットする
+poetry run csv_preprocessor column-fill -i test_data/header0/5x5_none.csv --column [4] --value x --row-if 1!=''
 ```
 
 ### カラムをマージ(column-merge)

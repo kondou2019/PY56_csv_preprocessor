@@ -156,15 +156,22 @@ def cmd_column_exclusive(input: Optional[str], output: Optional[str], column_gro
 @click.option("--column", callback=custom_index_list, required=True, type=str, help="対象のカラムのインデックスリスト。[index[,...]]")
 @click.option("--value", type=str, default="", show_default=True, help="置換する値")
 @click.option("--ffill", is_flag=True, help="前の行からの穴埋め")
+@click.option("--row-if", type=str, help="行のカラムの値に基づいて、置換を実行するかどうかを判定する")
 def cmd_column_fill(
-    input: Optional[str], output: Optional[str], header: int, column: str, value: str, ffill: bool
+    input: Optional[str],
+    output: Optional[str],
+    header: int,
+    column: str,
+    value: str,
+    ffill: bool,
+    row_if: Optional[str],
 ) -> None:
     input_path, output_path = option_path(input, output)
     column_index_list = option_index_list(column)
     # 実行
     tbl = csv_file_reader(input_path)
     for column in column_index_list:
-        column_fill_index(tbl, column, value, ffill=ffill, header=header)
+        column_fill_index(tbl, column, value, ffill=ffill, header=header, row_if=row_if)
     csv_file_writer(output_path, tbl)
     return
 
