@@ -142,7 +142,6 @@ def column_fill_index(
     value_source: str,
     value: str,
     *,
-    ffill: bool = False,
     header: int = 0,
     column_if: Optional[str] = None,
 ):
@@ -152,7 +151,6 @@ def column_fill_index(
     @param column_index カラムのインデックス
     @param value_source 置換する値の元
     @param value 埋める文字列
-    @param ffill 前方から埋める場合はTrue
     @param header ヘッダ行数
     @param column_if 置換を実行するかを行のカラムの値で判定
     """
@@ -250,6 +248,27 @@ def column_quote(table: Table, column_index: int) -> None:
             pass
         else:
             row[column_index] = f'"{column_value}"'
+
+
+def column_replace_index(
+    table: Table,
+    column_index: int,
+    regex: str,
+    repl: str,
+):
+    """!
+    @brief カラムを置換する
+    @param table テーブル
+    @param column_index カラムのインデックス
+    @param regex 置換を実行する正規表現
+    @param repl 置換する文字列
+    """
+    #
+    for row in table._rows:
+        column_value = row[column_index]
+        row[column_index] = re.sub(regex, repl, column_value)
+
+    pass
 
 
 def csv_filetype_detect(csv_type_list: list[CsvFileTypeInfo], file_path: Path) -> Optional[CsvFileTypeInfo]:

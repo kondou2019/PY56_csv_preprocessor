@@ -15,6 +15,7 @@ from src.table_utl import (
     column_fill_index,
     column_merge_index_group,
     column_quote,
+    column_replace_index,
     csv_filetype_detect,
     csv_filetype_list_read,
     csv_filetype_read,
@@ -285,6 +286,39 @@ def cmd_column_quote(input: Optional[str], output: Optional[str], column: str, h
     return
 
 
+@click.command(name="column-replace", help="カラムの置換")
+@click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
+@click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
+@click.option("--column", callback=custom_index_list, required=True, type=str, help="対象のカラムのインデックスリスト。[index[,...]]")
+@click.option(
+    "--regex",
+    type=str,
+    required=True,
+    help="置換する正規表現",
+)
+@click.option(
+    "--repl",
+    type=str,
+    required=True,
+    help="置換する文字列",
+)
+def cmd_column_replace(
+    input: Optional[str],
+    output: Optional[str],
+    column: str,
+    regex: str,
+    repl: str,
+) -> None:
+    input_path, output_path = option_path(input, output)
+    column_index_list = option_index_list(column)
+    # 実行
+    tbl = csv_file_reader(input_path)
+    for column in column_index_list:
+        column_replace_index(tbl, column, regex, repl)
+    csv_file_writer(output_path, tbl)
+    return
+
+
 @click.command(name="column-select", help="カラムを選択")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
@@ -454,6 +488,7 @@ cli.add_command(cmd_column_fill)
 cli.add_command(cmd_column_merge)
 cli.add_command(cmd_column_move)
 cli.add_command(cmd_column_quote)
+cli.add_command(cmd_column_replace)
 cli.add_command(cmd_column_select)
 cli.add_command(cmd_column_sort)
 cli.add_command(cmd_csv_filetype)

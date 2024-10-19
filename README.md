@@ -14,6 +14,7 @@ CSVファイルの前処理を行う。
 | column-merge      | カラムをマージ。column-exclusiveで排他した行をマージして元にもどす       |
 | column-move       | カラムを移動                                                             |
 | column-quote      | カラムの値をクォートで囲む                                               |
+| column-replace    | カラムを置換する                                                         |
 | column-select     | カラムを選択                                                             |
 | column-sort       | カラムでソート                                                           |
 | csv-filetype      | CSVファイルの種別を判定                                                  |
@@ -120,6 +121,16 @@ poetry run csv_preprocessor column-move -i test_data/header0/5x5.csv --from [3,2
 ```shell
 poetry run csv_preprocessor column-quote -i test_data/header0/3x3.csv --column [0]
 poetry run csv_preprocessor column-quote -i test_data/header0/3x3.csv --header 1 --column [0]
+```
+
+### カラムを置換する(column-replace)
+
+カラムの値を置換する。
+
+```shell
+poetry run csv_preprocessor column-replace -i test_data/header0/3x3.csv --column [1] --regex 5 --repl A
+# 正規表現
+echo aaa@xxx.com,bbb@yyy.net,ccc@zzz.org | poetry run csv_preprocessor column-replace --column [1] --regex '[a-z]+@' --repl 'ABC@'
 ```
 
 ### カラムを選択(column-select)
