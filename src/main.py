@@ -139,12 +139,11 @@ def cmd_column_del(input: Optional[str], output: Optional[str], column: str) -> 
     type=str,
     help="カラムのインデックスリスト。2回以上指定する。[index[,...]]",
 )
-@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
-def cmd_column_exclusive(input: Optional[str], output: Optional[str], column_group: tuple[str], header: int) -> None:
+def cmd_column_exclusive(input: Optional[str], output: Optional[str], column_group: tuple[str]) -> None:
     input_path, output_path = option_path(input, output)
     column_group_list = [option_index_list(i) for i in column_group]
     # 実行
-    tbl = csv_file_reader(input_path, header=header)
+    tbl = csv_file_reader(input_path)
     column_exclusive_index_group(tbl, column_group_list)
     csv_file_writer(output_path, tbl)
     return
@@ -153,7 +152,6 @@ def cmd_column_exclusive(input: Optional[str], output: Optional[str], column_gro
 @click.command(name="column-fill", help="カラムの欠損値を置換(穴埋め)")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
-@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
 @click.option("--column", callback=custom_index_list, required=True, type=str, help="対象のカラムのインデックスリスト。[index[,...]]")
 @click.option(
     "--value-source",
@@ -173,7 +171,6 @@ def cmd_column_exclusive(input: Optional[str], output: Optional[str], column_gro
 def cmd_column_fill(
     input: Optional[str],
     output: Optional[str],
-    header: int,
     column: str,
     value_source: str,
     value: str,
@@ -184,7 +181,7 @@ def cmd_column_fill(
     # 実行
     tbl = csv_file_reader(input_path)
     for column in column_index_list:
-        column_fill_index(tbl, column, value_source, value, header=header, column_if=column_if)
+        column_fill_index(tbl, column, value_source, value, column_if=column_if)
     csv_file_writer(output_path, tbl)
     return
 
@@ -207,15 +204,14 @@ def cmd_column_fill(
     type=str,
     help="カラムのインデックスリスト。2回以上指定する。[index[,...]]",
 )
-@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
 def cmd_column_merge(
-    input: Optional[str], output: Optional[str], column_key: str, column_group: tuple[str, ...], header: int
+    input: Optional[str], output: Optional[str], column_key: str, column_group: tuple[str, ...]
 ) -> None:
     input_path, output_path = option_path(input, output)
     column_key_index_list = option_index_list(column_key)
     column_group_list = [option_index_list(i) for i in column_group]
     # 実行
-    tbl = csv_file_reader(input_path, header=header)
+    tbl = csv_file_reader(input_path)
     column_merge_index_group(tbl, column_key_index_list, column_group_list)
     csv_file_writer(output_path, tbl)
     return
@@ -274,12 +270,11 @@ def cmd_column_move(from_: str, to: str, input: Optional[str], output: Optional[
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--column", callback=custom_index_list, required=True, type=str, help="カラムのインデックスリスト。[index[,...]]")
-@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
-def cmd_column_quote(input: Optional[str], output: Optional[str], column: str, header: int) -> None:
+def cmd_column_quote(input: Optional[str], output: Optional[str], column: str) -> None:
     input_path, output_path = option_path(input, output)
     column_index_list = option_index_list(column)
     # 実行
-    tbl = csv_file_reader(input_path, header=header)
+    tbl = csv_file_reader(input_path)
     for column in column_index_list:
         column_quote(tbl, column)
     csv_file_writer(output_path, tbl)
@@ -290,18 +285,8 @@ def cmd_column_quote(input: Optional[str], output: Optional[str], column: str, h
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--column", callback=custom_index_list, required=True, type=str, help="対象のカラムのインデックスリスト。[index[,...]]")
-@click.option(
-    "--regex",
-    type=str,
-    required=True,
-    help="置換する正規表現",
-)
-@click.option(
-    "--repl",
-    type=str,
-    required=True,
-    help="置換する文字列",
-)
+@click.option("--regex", type=str, required=True, help="置換する正規表現")
+@click.option("--repl", type=str, required=True, help="置換する文字列")
 def cmd_column_replace(
     input: Optional[str],
     output: Optional[str],
@@ -337,22 +322,14 @@ def cmd_column_select(input: Optional[str], output: Optional[str], column: str) 
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option(
-    "--column-key",
-    callback=custom_index_list,
-    required=True,
-    type=str,
-    help="ソートするカラムのインデックスリスト。[index[,...]]",
+    "--column-key", callback=custom_index_list, required=True, type=str, help="ソートするカラムのインデックスリスト。[index[,...]]"
 )
 @click.option(
-    "--column-attr",
-    callback=custom_value_list,
-    type=str,
-    help="ソートするカラムの属性(str,int,float)。省略時はすべてstr。[attr[,...]]",
+    "--column-attr", callback=custom_value_list, type=str, help="ソートするカラムの属性(str,int,float)。省略時はすべてstr。[attr[,...]]"
 )
-@click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
 @click.option("--reverse", is_flag=True, help="降順にソート")
 def cmd_column_sort(
-    input: Optional[str], output: Optional[str], column_key: str, column_attr: Optional[str], header: int, reverse: bool
+    input: Optional[str], output: Optional[str], column_key: str, column_attr: Optional[str], reverse: bool
 ) -> None:
     input_path, output_path = option_path(input, output)
     column_key_index_list = option_index_list(column_key)
@@ -361,7 +338,7 @@ def cmd_column_sort(
     else:
         column_attr_list = option_value_list(column_attr)
     # 実行
-    tbl = csv_file_reader(input_path, header=header)
+    tbl = csv_file_reader(input_path)
     table_sort(tbl, set(column_key_index_list), column_attr_list, reverse=reverse)
     csv_file_writer(output_path, tbl)
     return
