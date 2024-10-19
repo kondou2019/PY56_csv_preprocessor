@@ -154,16 +154,28 @@ def cmd_column_exclusive(input: Optional[str], output: Optional[str], column_gro
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
 @click.option("--header", type=int, default=0, show_default=True, help="ヘッダの行数。ヘッダは処理の対象になりません")
 @click.option("--column", callback=custom_index_list, required=True, type=str, help="対象のカラムのインデックスリスト。[index[,...]]")
-@click.option("--value", type=str, default="", show_default=True, help="置換する値")
-@click.option("--ffill", is_flag=True, help="前の行からの穴埋め")
+@click.option(
+    "--value-source",
+    type=click.Choice(["constant", "ffill", "column"]),
+    default="constant",
+    show_default=True,
+    help="置換する値の元(--valueオプションと組み合わせる)。constant:指定値 ffill:前の行からの穴埋め column:指定したカラムの値",
+)
+@click.option(
+    "--value",
+    type=str,
+    default="",
+    show_default=True,
+    help="置換する値。--value-sourceの指定値により意味が異なる。constant: セットする値 column: カラムのインデックス",
+)
 @click.option("--column-if", type=str, help="行のカラムの値に基づいて、置換を実行するかどうかを判定する")
 def cmd_column_fill(
     input: Optional[str],
     output: Optional[str],
     header: int,
     column: str,
+    value_source: str,
     value: str,
-    ffill: bool,
     column_if: Optional[str],
 ) -> None:
     input_path, output_path = option_path(input, output)
@@ -171,7 +183,7 @@ def cmd_column_fill(
     # 実行
     tbl = csv_file_reader(input_path)
     for column in column_index_list:
-        column_fill_index(tbl, column, value, ffill=ffill, header=header, column_if=column_if)
+        column_fill_index(tbl, column, value_source, value, header=header, column_if=column_if)
     csv_file_writer(output_path, tbl)
     return
 

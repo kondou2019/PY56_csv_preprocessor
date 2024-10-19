@@ -139,6 +139,7 @@ def check_column_if(v_left: str, operator: str, v_right: str, *, column_if: Opti
 def column_fill_index(
     table: Table,
     column_index: int,
+    value_source: str,
     value: str,
     *,
     ffill: bool = False,
@@ -149,6 +150,7 @@ def column_fill_index(
     @brief カラムの空白を埋める
     @param table テーブル
     @param column_index カラムのインデックス
+    @param value_source 置換する値の元
     @param value 埋める文字列
     @param ffill 前方から埋める場合はTrue
     @param header ヘッダ行数
@@ -158,7 +160,7 @@ def column_fill_index(
     if column_if is not None:
         match = re.match(r"(\d+)([!=><]=?)(.*)", column_if)
         if match is None:
-            raise Exception(f"--column-ifの指定が正しくありません。--raw-if {columnif}")
+            raise Exception(f"--column-ifの指定が正しくありません。--raw-if {column_if}")
         column_if_index = int(match.group(1))  # 先頭の数字部分
         column_if_operator = match.group(2)  # 比較演算子
         column_if_rest = match.group(3)  # 残りの文字列
@@ -177,10 +179,14 @@ def column_fill_index(
                 v_left = row[column_if_index]
                 if check_column_if(v_left, column_if_operator, column_if_rest, column_if=column_if) == False:
                     continue
-            if ffill:
-                row[column_index] = value_prev
-            else:
-                row[column_index] = value
+            # 穴埋め
+            if value_source == "constant":
+                v = value
+            elif value_source == "ffill":
+                v = value_prev
+            elif value_source == "column":
+                v = row[int(value)]
+            row[column_index] = v
         else:
             value_prev = column_value
     pass

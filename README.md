@@ -57,8 +57,12 @@ poetry run csv_preprocessor column-exclusive -i test_data/header1/5x5.csv --head
 ```shell
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x
 poetry run csv_preprocessor column-fill -i test_data/header0/5x5_none.csv --column [1,3] --value x
-poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --ffill
-poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --ffill
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value-source ffill
+# 先頭行が空白の場合は、xを穴埋め。以降は直前の行の値で穴埋め
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value-source ffill --value x 
+# カラム0の値で穴埋め
+poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value-source column --value 0
+
 # ヘッダ行をスキップ
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --header 1
 ```
