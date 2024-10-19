@@ -5,7 +5,7 @@
             "name": "Python: column-exclusive",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
             "args": [
                 "column-exclusive",
                 "-i", "test_data/header0/3x3.csv",
@@ -19,7 +19,7 @@
             "name": "Python: column-merge",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
             "args": [
                 "column-merge",
                 "-i", "test_data/header0/3x3.csv",
@@ -34,7 +34,7 @@
             "name": "Python: column-move",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
             "args": [
                 "column-move",
                 "-i", "test_data/header0/5x5.csv",
@@ -48,7 +48,7 @@
             "name": "Python: column-exclusive",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
             "args": [
                 "column-exclusive",
                 "-i", "test_data/header0/3x3.csv",
@@ -62,7 +62,7 @@
             "name": "Python: csv-header-add",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
             "args": [
                 "csv-header-add",
                 "-i", "test_data/header0/3x3.csv",
@@ -75,7 +75,7 @@
             "name": "Python: sort",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
             "args": [
                 "sort",
                 "-i", "test_data/header0/3x3.csv",

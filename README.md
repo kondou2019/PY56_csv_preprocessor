@@ -2,7 +2,25 @@
 
 CSVファイルの前処理を行う。
 
-## csv_preprocessorサブコマンド
+## サブコマンド
+
+
+| サブコマンド      | 機能                                                                     |
+| ----------------- | ------------------------------------------------------------------------ |
+| column-add        | カラムを追加                                                             |
+| column-del        | カラムを削除                                                             |
+| column-exclusive  | カラムを排他。--column-groupで指定したカラムグループを別々の行に分離する |
+| column-fill       | カラムの欠損値を置換(穴埋め)                                             |
+| column-merge      | カラムをマージ。column-exclusiveで排他した行をマージして元にもどす       |
+| column-move       | カラムを移動                                                             |
+| column-quote      | カラムの値をクォートで囲む                                               |
+| column-select     | カラムを選択                                                             |
+| column-sort       | カラムでソート                                                           |
+| csv-filetype      | CSVファイルの種別を判定                                                  |
+| csv-header-add    | CSVファイルにヘッダを追加                                                |
+| csv-header-change | CSVファイルのヘッダを変更                                                |
+| csv-header-del    | CSVファイルのヘッダを削除                                                |
+| csv-report        | CSVファイルの情報を表示                                                  |
 
 ### カラムを追加(column-add)
 
@@ -43,9 +61,31 @@ poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --colu
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --ffill
 # ヘッダ行をスキップ
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --header 1
+```
 
-# カラム4が空で、カラム1が空ではない場合にカラム4にxをセットする
-poetry run csv_preprocessor column-fill -i test_data/header0/5x5_none.csv --column [4] --value x --row-if 1!=''
+--column-if  
+
+書式  
+
+```text
+インデックス+比較演算子+値
+```
+
+比較演算子
+
+| 演算子 | 意味       |
+| ------ | ---------- |
+| ==     |            |
+| !=     |            |
+| <      | 未サポート |
+| >      | 未サポート |
+| <=     | 未サポート |
+| >=     | 未サポート |
+
+カラム4が空で、カラム1が空ではない場合にカラム4にxをセットする
+
+```shell
+poetry run csv_preprocessor column-fill -i test_data/header0/5x5_none.csv --column [4] --value x --column-if 1!=''
 ```
 
 ### カラムをマージ(column-merge)
