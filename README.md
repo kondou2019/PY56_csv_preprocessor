@@ -210,6 +210,12 @@ CSVファイルの情報をJSON形式で出力する。
 poetry run csv_preprocessor csv-report --csv-info-dir test_data/csv_info test_data/header1/2x2.csv test_data/header1/3x3.csv test_data/header1/5x5.csv test_data/header2/3x3.csv
 ```
 
+### カスタムヘッダの取得(custom-header-get)
+
+```shell
+poetry run csv_preprocessor custom-header-get -i test_data/custom/data/1x3_a.csv
+```
+
 ## カラムの階層構造
 
 カラムに複数のデータを記述するとき、行を分割して記述したい場合がある。column-exclusiveを使うことで行を分割することができる。

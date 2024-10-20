@@ -53,7 +53,6 @@ def cmd_csv_header_add(input: Optional[str], output: Optional[str], input_header
     tbl = csv_file_reader(input_path)
     tbl.table_header_add(input_csv_filetype)
     csv_file_writer(output_path, tbl)
-
     return
 
 

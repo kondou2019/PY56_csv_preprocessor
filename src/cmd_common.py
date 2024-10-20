@@ -7,7 +7,7 @@ def option_path(input: Optional[str], output: Optional[str]) -> tuple[Optional[P
     @brief オプションのパスの共通処理を行う
     @param input 入力ファイル
     @param output 出力ファイル
-    @return 入力ファイルと出力ファイルのパス
+    @return 入力ファイルと出力ファイルのパス。Noneの場合は、標準入力と標準出力
     """
     input_path: Optional[Path] = None
     if input is not None:
