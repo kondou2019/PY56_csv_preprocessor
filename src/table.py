@@ -193,7 +193,9 @@ class Table:
         # 追加するCSVヘッダとカラム数が一致するか確認
         if self.row_count() != 0:  # データ行がある場合は、ヘッダのカラム数と一致しているかチェックする
             if self.column_count() != csv_filetype.header_column_count:
-                raise ValueError("追加するCSVヘッダとカラム数が一致しません。")
+                raise ValueError(
+                    f"追加するCSVヘッダとカラム数が一致しません。header_column_count={csv_filetype.header_column_count},data_column_count={self.column_count()}"
+                )
         #
         self._header_rows = csv_filetype._header_rows  # ヘッダを追加
 

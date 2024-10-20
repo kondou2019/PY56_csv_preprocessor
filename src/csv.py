@@ -1,3 +1,4 @@
+import difflib
 import sys
 from io import TextIOWrapper
 from pathlib import Path
@@ -34,7 +35,11 @@ def csv_reader(i_stream: TextIOWrapper, *, header: int = 0, csv_filetype: Option
     # csv_filetypeの情報と一致するか確認
     if csv_filetype is not None:
         if table._header_rows != csv_filetype._header_rows:
-            raise ValueError("ヘッダが一致しません。")
+            data1 = [",".join(inner_list) for inner_list in table._header_rows]
+            head1 = [",".join(inner_list) for inner_list in csv_filetype._header_rows]
+            diff = difflib.ndiff(data1, head1)
+            diff_s = "\n".join(diff)
+            raise ValueError(f"ヘッダが一致しません。\n==差分==\n{diff_s}\n====\n")
     return table
 
 
