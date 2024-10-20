@@ -110,7 +110,7 @@ def test_column_fill_index_0101N():  # すべて空
         ["c", ""],
     ]
     tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
-    column_fill_index(tbl, 1, "x")
+    column_fill_index(tbl, 1, "constant", "x")
     assert len(tbl._rows) == 3
     assert tbl._rows[0] == ["a", "x"]
     assert tbl._rows[1] == ["b", "x"]
@@ -124,7 +124,7 @@ def test_column_fill_index_0102N():  # 一部空
         ["c", ""],
     ]
     tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
-    column_fill_index(tbl, 1, "x")
+    column_fill_index(tbl, 1, "constant", "x")
     assert len(tbl._rows) == 3
     assert tbl._rows[0] == ["a", "x"]
     assert tbl._rows[1] == ["b", "2"]
@@ -138,7 +138,7 @@ def test_column_fill_index_0201N():  # ffill,すべて空
         ["c", ""],
     ]
     tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
-    column_fill_index(tbl, 1, "", ffill=True)
+    column_fill_index(tbl, 1, "ffill", "")
     assert len(tbl._rows) == 3
     assert tbl._rows[0] == ["a", ""]
     assert tbl._rows[1] == ["b", ""]
@@ -152,7 +152,7 @@ def test_column_fill_index_0202N():  # ffill,一部空
         ["c", ""],
     ]
     tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
-    column_fill_index(tbl, 1, "", ffill=True)
+    column_fill_index(tbl, 1, "ffill", "")
     assert len(tbl._rows) == 3
     assert tbl._rows[0] == ["a", ""]
     assert tbl._rows[1] == ["b", "2"]
@@ -166,7 +166,7 @@ def test_column_fill_index_0203B():  # ffill,初期値を指定
         ["c", ""],
     ]
     tbl = Table.create_rows(copy.deepcopy(LOCAL_TABLE_2x2))
-    column_fill_index(tbl, 1, "x", ffill=True)
+    column_fill_index(tbl, 1, "ffill", "x")
     assert len(tbl._rows) == 3
     assert tbl._rows[0] == ["a", "x"]
     assert tbl._rows[1] == ["b", "2"]
