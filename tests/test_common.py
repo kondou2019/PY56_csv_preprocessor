@@ -45,6 +45,18 @@ def test_split_csv_string_no_normalize_0002X(test_id: str, val: str, expected: l
     assert result == expected
 
 
+@pytest.mark.parametrize(
+    "test_id, val, expected",
+    [
+        ("0101N", "a,b", ["a", "b"]),  # スペースなし
+        ("0201N", " a, b", ["a", "b"]),  # 前後にスペース
+    ],
+)
+def test_split_csv_string_no_normalize_0003X(test_id: str, val: str, expected: list[str]):  # strip=True
+    result = split_csv_string_no_normalize(val, strip=True)
+    assert result == expected
+
+
 def test_textfile_read_stream_0101N():
     lines = textfile_read_stream(io.StringIO(LINE_3))
     assert lines == ["line1\n", "line2\n", "line3\n"]

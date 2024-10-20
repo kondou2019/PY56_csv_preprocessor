@@ -98,11 +98,12 @@ def textfile_write_stream(
     return
 
 
-def split_csv_string_no_normalize(input_string: str, *, delimiter: str = ",") -> list[str]:
+def split_csv_string_no_normalize(input_string: str, *, delimiter: str = ",", strip: bool = False) -> list[str]:
     """!
     @brief 文字列を区切り文字で分割する。分割文字列の内容をそのまま
     @param input_string 分割文字列
     @param delimiter 区切り文字
+    @param strip 値の前後のスペースを除去
     @return 分割された文字列のリスト
     @note
     ・ダブルクォート記号で囲むと区切り記号を無視する
@@ -129,13 +130,19 @@ def split_csv_string_no_normalize(input_string: str, *, delimiter: str = ",") ->
                 in_quotes = not in_quotes
         elif char == delimiter and not in_quotes:
             # クォート外の区切り文字
-            result.append("".join(current))
+            s = "".join(current)
+            if strip == True:
+                s = s.strip()
+            result.append(s)
             current = []
         else:
             # 通常の文字
             current.append(char)
         i += 1
     # 最後のフィールドを追加
-    result.append("".join(current))
+    s = "".join(current)
+    if strip == True:
+        s = s.strip()
+    result.append(s)
 
     return result

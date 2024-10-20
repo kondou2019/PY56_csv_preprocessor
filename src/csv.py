@@ -8,19 +8,22 @@ from src.common import split_csv_string_no_normalize
 from src.table import *
 
 
-def csv_reader(i_stream: TextIOWrapper, *, header: int = 0, csv_filetype: Optional[CsvFileTypeInfo] = None) -> Table:
+def csv_reader(
+    i_stream: TextIOWrapper, *, header: int = 0, csv_filetype: Optional[CsvFileTypeInfo] = None, strip: bool = False
+) -> Table:
     """!
     @brief CSVファイルを読み込む
     @param i_stream 入力ストリーム
     @param header ヘッダの行数
     @param csv_filetype CSVファイルの情報
+    @param strip 値の前後のスペースを除去
     @return 表
     """
     rows: list[list[str]] = []
     for line in i_stream:
         line = line.rstrip("\n")
         # columns = line.split(",")
-        columns = split_csv_string_no_normalize(line)
+        columns = split_csv_string_no_normalize(line, strip=strip)
         rows.append(columns)
     # csv_filetypeのヘッダ行数が優先
     if csv_filetype is not None:

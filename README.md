@@ -216,6 +216,19 @@ poetry run csv_preprocessor csv-report --csv-info-dir test_data/csv_info test_da
 poetry run csv_preprocessor custom-header-get -i test_data/custom/data/1x3_a.csv
 ```
 
+### カスタムヘッダを1行ヘッダに変換(custom-header-line1)
+
+```shell
+poetry run csv_preprocessor custom-header-line1 -i test_data/custom/data/1x3_a.csv
+poetry run csv_preprocessor custom-header-line1 -i test_data/custom/data/1x8_b.csv
+```
+
+カラム名とインデックスの表示
+
+```shell
+poetry run csv_preprocessor custom-header-line1 -i test_data/custom/data/1x8_b.csv | tr ',', '\n' | awk '{print NR-1, $0}'
+```
+
 ## カラムの階層構造
 
 カラムに複数のデータを記述するとき、行を分割して記述したい場合がある。column-exclusiveを使うことで行を分割することができる。

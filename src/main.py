@@ -15,7 +15,7 @@ from src.cmd_column import (
     cmd_column_sort,
 )
 from src.cmd_csv import cmd_csv_filetype, cmd_csv_header_add, cmd_csv_header_change, cmd_csv_header_del, cmd_csv_report
-from src.cmd_custom import cmd_custom_header_get
+from src.cmd_custom import cmd_custom_header_get, cmd_custom_header_line1
 
 __VERSION__ = "0.5.255"
 
@@ -43,6 +43,7 @@ cli.add_command(cmd_csv_header_change)
 cli.add_command(cmd_csv_header_del)
 cli.add_command(cmd_csv_report)
 cli.add_command(cmd_custom_header_get)
+cli.add_command(cmd_custom_header_line1)
 
 
 def main(argv: list[str]) -> int:
