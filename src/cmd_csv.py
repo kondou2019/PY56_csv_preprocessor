@@ -44,14 +44,14 @@ def cmd_csv_filetype(csv_info_dir: str, files: tuple[str, ...]) -> None:
 @click.command(name="csv-header-add", help="CSVファイルにヘッダを追加")
 @click.option("--input", "-i", type=click.Path(exists=True), help="入力ファイル,省略時は標準入力")
 @click.option("--output", "-o", type=click.Path(), help="出力ファイル,省略時は標準出力")
-@click.option("--add-header", type=click.Path(exists=True), required=True, help="追加するCSVヘッダファイル")
-def cmd_csv_header_add(input: Optional[str], output: Optional[str], add_header: str) -> None:
+@click.option("--input-header", type=click.Path(exists=True), required=True, help="追加するCSVヘッダファイル")
+def cmd_csv_header_add(input: Optional[str], output: Optional[str], input_header: str) -> None:
     input_path, output_path = option_path(input, output)
-    add_header_path = Path(add_header)
+    input_header_path = Path(input_header)
     # 実行
-    add_csv_filetype = csv_filetype_read(add_header_path)  # 追加するCSVヘッダファイルを読み込む
+    input_csv_filetype = csv_filetype_read(input_header_path)  # 追加するCSVヘッダファイルを読み込む
     tbl = csv_file_reader(input_path)
-    tbl.table_header_add(add_csv_filetype)
+    tbl.table_header_add(input_csv_filetype)
     csv_file_writer(output_path, tbl)
 
     return

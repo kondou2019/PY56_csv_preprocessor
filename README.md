@@ -181,7 +181,7 @@ $
 CSVファイルにヘッダを追加する。
 
 ```shell
-poetry run csv_preprocessor csv-header-add -i test_data/header0/3x3.csv --add-header test_data/csv_info/1x3_header.csv
+poetry run csv_preprocessor csv-header-add -i test_data/header0/3x3.csv --input-header test_data/csv_info/1x3_header.csv
 ```
 
 ### CSVファイルのヘッダを変更(csv-header-change)
