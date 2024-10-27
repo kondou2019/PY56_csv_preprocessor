@@ -53,7 +53,7 @@ poetry run csv_preprocessor column-del -i test_data/header0/3x3.csv --column [0,
 1行に同時に指定できないカラムを分離する。
 
 ```shell
-poetry run csv_preprocessor column-exclusive -i test_data/header1/5x5.csv --header 1 --column-group [1,2] --column-group [3,4]
+poetry run csv_preprocessor column-exclusive -i test_data/header1/5x5.csv --column-group [1,2] --column-group [3,4]
 ```
 
 ### カラムの欠損値を置換(column-fill)
@@ -68,9 +68,6 @@ poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --colu
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value-source ffill --value x 
 # カラム0の値で穴埋め
 poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value-source column --value 0
-
-# ヘッダ行をスキップ
-poetry run csv_preprocessor column-fill -i test_data/header0/3x2_none.csv --column [1] --value x --header 1
 ```
 
 --column-if  
@@ -103,7 +100,7 @@ poetry run csv_preprocessor column-fill -i test_data/header0/5x5_none.csv --colu
 column-exclusiveで排他した行をマージして元にもどす。
 
 ```shell
-poetry run csv_preprocessor column-merge -i tmp/5x5h1_ex.csv --header 1 --column-key [0] --column-group [1,2] --column-group [3,4]
+poetry run csv_preprocessor column-merge -i tmp/5x5h1_ex.csv --column-key [0] --column-group [1,2] --column-group [3,4]
 ```
 
 ### カラムを移動(column-move)
@@ -125,7 +122,6 @@ poetry run csv_preprocessor column-move -i test_data/header0/5x5.csv --from [3,2
 
 ```shell
 poetry run csv_preprocessor column-quote -i test_data/header0/3x3.csv --column [0]
-poetry run csv_preprocessor column-quote -i test_data/header0/3x3.csv --header 1 --column [0]
 ```
 
 ### カラムを置換する(column-replace)
@@ -153,13 +149,13 @@ poetry run csv_preprocessor column-select -i test_data/header0/3x3.csv --column 
 CSVファイルをソートする。
 
 ```shell
-poetry run csv_preprocessor column-sort -i test_data/header1/5x5_sort.csv --column-key [1,2] --header 1
+poetry run csv_preprocessor column-sort -i test_data/header1/5x5_sort.csv --column-key [1,2]
 ```
 
 数値順。--column-attr
 
 ```shell
-poetry run csv_preprocessor column-sort -i test_data/header1/5x3_sort_int.csv --header 1 --column-key [1,2] --column-attr [int,str]
+poetry run csv_preprocessor column-sort -i test_data/header1/5x3_sort_int.csv --column-key [1,2] --column-attr [int,str]
 ```
 
 ### CSVファイルの種別を判定(csv-filetype)
