@@ -213,14 +213,14 @@ poetry run csv_preprocessor csv-report --csv-info-dir test_data/csv_info test_da
 ### カスタムヘッダの取得(custom-header-get)
 
 ```shell
-poetry run csv_preprocessor custom-header-get -i test_data/custom/data/1x3_a.csv
+poetry run csv_preprocessor custom-header-get --separator == -i test_data/custom/data/1x3_a.csv
 ```
 
 ### カスタムヘッダを1行ヘッダに変換(custom-header-line1)
 
 ```shell
-poetry run csv_preprocessor custom-header-line1 -i test_data/custom/data/1x3_a.csv
-poetry run csv_preprocessor custom-header-line1 -i test_data/custom/data/1x8_b.csv
+poetry run csv_preprocessor custom-header-line1 --separator == -i test_data/custom/data/1x3_a.csv
+poetry run csv_preprocessor custom-header-line1 --separator == -i test_data/custom/data/1x8_b.csv
 ```
 
 カラム名とインデックスの表示
