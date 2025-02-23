@@ -6,9 +6,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-from src.common import textfile_read
-from src.csv import csv_file_reader, csv_reader
-from src.table import CsvFileTypeInfo, Table
+from src.lib.common import textfile_read
+from src.lib.csv import csv_file_reader, csv_reader
+from src.lib.table import CsvFileTypeInfo, Table
 
 
 @dataclass

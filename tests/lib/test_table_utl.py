@@ -3,8 +3,8 @@ import copy
 import io
 
 # from src.csv import csv_reader
-from src.table import Table
-from src.table_utl import (
+from src.lib.table import Table
+from src.lib.table_utl import (
     column_exclusive_index_group,
     column_fill_index,
     column_merge_index_group,

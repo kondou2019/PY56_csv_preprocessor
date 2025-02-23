@@ -2,7 +2,7 @@ import io
 
 import pytest
 
-from src.common import split_csv_string_no_normalize, textfile_read_stream
+from src.lib.common import split_csv_string_no_normalize, textfile_read_stream
 
 LINE_3 = """\
 line1

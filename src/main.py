@@ -2,7 +2,7 @@
 
 import click
 
-from src.cmd_column import (
+from src.cmd.cmd_column import (
     cmd_column_add,
     cmd_column_del,
     cmd_column_exclusive,
@@ -14,8 +14,14 @@ from src.cmd_column import (
     cmd_column_select,
     cmd_column_sort,
 )
-from src.cmd_csv import cmd_csv_filetype, cmd_csv_header_add, cmd_csv_header_change, cmd_csv_header_del, cmd_csv_report
-from src.cmd_custom import cmd_custom_header_get, cmd_custom_header_line1
+from src.cmd.cmd_csv import (
+    cmd_csv_filetype,
+    cmd_csv_header_add,
+    cmd_csv_header_change,
+    cmd_csv_header_del,
+    cmd_csv_report,
+)
+from src.cmd.cmd_custom import cmd_custom_header_get, cmd_custom_header_line1
 
 __VERSION__ = "0.6.255"
 

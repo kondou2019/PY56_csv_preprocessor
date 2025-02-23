@@ -1,9 +1,9 @@
 # import pytest
 import io
 
-from src.column_name import ColumnName
-from src.csv import csv_reader
-from src.table import Table
+from src.lib.column_name import ColumnName
+from src.lib.csv import csv_reader
+from src.lib.table import Table
 
 CSV_3x3 = """\
 a,b,c
