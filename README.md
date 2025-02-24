@@ -225,6 +225,14 @@ poetry run csv_preprocessor custom-header-line1 --separator == -i test_data/cust
 poetry run csv_preprocessor custom-header-line1 -i test_data/custom/data/1x8_b.csv | tr ',', '\n' | awk '{print NR-1, $0}'
 ```
 
+### フィルターモジュールによる加工(filter)
+
+複雑な加工を行う場合、pythonモジュールを作成する。作成したモジュールをフィルタとして実行する。
+
+```shell
+poetry run csv_preprocessor filter --filter-name sample --header 1 -i test_data/header1/3x3.csv
+```
+
 ## カラムの階層構造
 
 カラムに複数のデータを記述するとき、行を分割して記述したい場合がある。column-exclusiveを使うことで行を分割することができる。
