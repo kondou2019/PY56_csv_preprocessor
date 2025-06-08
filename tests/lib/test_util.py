@@ -2,7 +2,7 @@ import io
 
 import pytest
 
-from src.table_utl import check_column_if
+from src.lib.table_utl import check_column_if
 
 
 @pytest.mark.parametrize(

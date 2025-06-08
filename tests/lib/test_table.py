@@ -2,7 +2,7 @@
 import copy
 import io
 
-from src.table import Table
+from src.lib.table import Table
 
 TABLE_3x3 = [["a", "b", "c"], ["1", "2", "3"], ["4", "5", "6"]]
 

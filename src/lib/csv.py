@@ -4,8 +4,8 @@ from io import TextIOWrapper
 from pathlib import Path
 from typing import Optional
 
-from src.common import split_csv_string_no_normalize
-from src.table import *
+from src.lib.common import split_csv_string_no_normalize
+from src.lib.table import *
 
 
 def csv_reader(

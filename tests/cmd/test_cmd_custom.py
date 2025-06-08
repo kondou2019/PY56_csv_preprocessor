@@ -1,9 +1,9 @@
 # import pytest
 import io
 
-from src.cmd_custom import make_header1
-from src.csv import csv_reader
-from src.table import Table
+from src.cmd.cmd_custom import make_header1
+from src.lib.csv import csv_reader
+from src.lib.table import Table
 
 
 def test_make_header1_0101N() -> None:

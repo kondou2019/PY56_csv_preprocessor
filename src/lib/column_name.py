@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from src.table import Table
+from src.lib.table import Table
 
 Self = TypeVar("Self", bound="ColumnName")
 

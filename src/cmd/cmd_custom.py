@@ -3,10 +3,10 @@ from typing import Optional
 
 import click
 
-from src.cmd_common import option_path
-from src.common import textfile_write
-from src.csv import csv_file_reader, csv_file_writer
-from src.table import Table
+from src.cmd.cmd_common import option_path
+from src.lib.common import textfile_write
+from src.lib.csv import csv_file_reader, csv_file_writer
+from src.lib.table import Table
 
 
 def make_header1(table: Table) -> str:

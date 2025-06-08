@@ -1,8 +1,8 @@
 # import pytest
 import io
 
-from src.csv import csv_reader
-from src.table import Table
+from src.lib.csv import csv_reader
+from src.lib.table import Table
 
 
 def test_csv_reader_0101N() -> None:
