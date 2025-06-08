@@ -225,5 +225,5 @@ poetry run csv_preprocessor custom-header-line1 -i test_data/custom/data/1x8_b.c
 複雑な加工を行う場合、pythonモジュールを作成する。作成したモジュールをフィルタとして実行する。  
 
 ```shell
-poetry run csv_preprocessor filter --filter-name sample --header 1 -i test_data/header1/3x3.csv
+poetry run csv_preprocessor filter --filter-name sample -i test_data/header1/3x3.csv
 ```
