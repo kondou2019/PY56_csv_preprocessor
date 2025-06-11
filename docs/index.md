@@ -32,5 +32,21 @@ column-mergeをつかうことでcolumn-exclusiveで分割した行を元に戻�
 - 新しいヘッダを追加
 
 ```shell
-cat test_data/header1/3x3.csv | poetry run csv_preprocessor csv-header-del --header 1 | poetry run csv_preprocessor column-add --column [-1] | poetry run csv_preprocessor column-fill --column [3] --value x | poetry run csv_preprocessor csv-header-add --input-header test_data/csv_info/1x4_header.csv
+cat test_data/header1/3x3.csv | \
+poetry run csv_preprocessor csv-header-del --header 1 | \
+poetry run csv_preprocessor column-add --column [-1] | \
+poetry run csv_preprocessor column-fill --column [3] --value x | \
+poetry run csv_preprocessor csv-header-add --input-header test_data/csv_info/1x4_header.csv
+```
+
+### 特定のファイルの表示
+
+ディレクトリ下のsample.csvのファイルからヘッダを削除し3カラム目を出力する
+
+```shell
+find sample/csv -type f -name "sample.csv" -print0 | \
+xargs -0 -i bash -c '\
+cat {} \ 
+poetry run csv_preprocessor csv-headr-del --header 2 | \
+poetry run csv_preprocessor column-select --column [2]
 ```
