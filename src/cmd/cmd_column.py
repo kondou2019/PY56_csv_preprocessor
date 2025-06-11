@@ -3,7 +3,7 @@ from typing import Optional
 
 import click
 
-from src.cmd.cmd_common import option_path
+from src.cmd.cmd_common import custom_index_list, option_index_list, option_path
 from src.lib.csv import csv_file_reader, csv_file_writer
 from src.lib.table_utl import (
     column_exclusive_index_group,
@@ -13,15 +13,6 @@ from src.lib.table_utl import (
     column_replace_index,
     table_sort,
 )
-
-
-def option_index_list(index_list: str) -> list[int]:
-    """!
-    @brief オプションのインデックスリストの共通処理を行う
-    @param index_list インデックスリスト,"[index[,...]]"
-    @return インデックスリスト
-    """
-    return [int(i) for i in index_list[1:-1].split(",")]
 
 
 def option_value_list(value_list: str) -> list[str]:
@@ -40,15 +31,6 @@ def custom_group_index_list(ctx: click.core.Context, param: click.Option, value:
     for v in value:
         if v[0] != "[" or v[-1] != "]":
             raise click.BadParameter('インデックスリストは"[index[,...]]"の形式である必要があります。')
-    return value
-
-
-def custom_index_list(ctx: click.core.Context, param: click.Option, value: str):
-    """!
-    @brief 独自のチェックを行う関数。インデックスリストのチェックを行う。
-    """
-    if value[0] != "[" or value[-1] != "]":
-        raise click.BadParameter('インデックスリストは"[index[,...]]"の形式である必要があります。')
     return value
 
 

@@ -54,7 +54,7 @@ cli.add_command(cmd_custom_header_line1)
 cli.add_command(cmd_filter)
 
 
-def main(argv: list[str]) -> int:
+def main(argv: list[str]) -> None:
     """!
     @brief 主入口点
     @param argv コマンドラインオプション

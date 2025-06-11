@@ -6,7 +6,7 @@ from src.lib.csv import csv_reader
 from src.lib.table import Table
 
 
-def test_execute():
+def test_filter_execute_table() -> None:
     test_data = """\
 a,b,c
 1,2,3
@@ -14,5 +14,5 @@ a,b,c
 """
     tbl: Table = csv_reader(io.StringIO(test_data))
     filter = SampleFilter.new_filter()
-    result = filter.filter_execute(tbl)
+    result = filter.filter_execute_table(tbl)
     assert result is not None

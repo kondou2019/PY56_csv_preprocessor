@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Self
 
-from src.filter.filter_base import FilterBase
+from src.filter.filter_base import FilterBase, FilterType
 from src.lib.table import Table
 
 
@@ -11,5 +11,9 @@ class SampleFilter(FilterBase):
     def new_filter(cls) -> Self:
         return SampleFilter()
 
-    def filter_execute(self, tbl: Table) -> Table:
-        return tbl
+    @classmethod
+    def filter_get_type(cls) -> FilterType:
+        return FilterType.TABLE
+
+    def filter_execute_table(self, table: Table, *, column_index_list: list[int] = [], **kwargs) -> Table:
+        return table
