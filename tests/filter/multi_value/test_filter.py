@@ -5,7 +5,7 @@ import pytest
 
 from src.filter.multi_value.filter import MultiValueFilter, multi_value_join, multi_value_split
 
-# from src.lib.csv import csv_reader
+# from src.lib.csv import csv_string_reader
 # from src.lib.table import Table
 
 
@@ -34,7 +34,7 @@ def test_filter_execute_cell(_test_id: str, val: str, kwargs: dict[str, Optional
         ("0102N", ["a"], False, "a"),
     ],
 )
-def test_multi_value_join_0001X(_test_id: str, val: str, quote: bool, expected: tuple[list[str], bool]) -> None:
+def test_multi_value_join_0001X(_test_id: str, val: list[str], quote: bool, expected: str) -> None:
     result = multi_value_join(val, quote)
     assert result == expected
 

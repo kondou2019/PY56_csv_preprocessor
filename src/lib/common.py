@@ -70,15 +70,15 @@ def textfile_write(
     """
     if file_path is None:
         stream = TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-        return textfile_write_stream(stream, lines, add_newline=add_newline, skip_line_count=skip_line_count)
+        return _textfile_write_stream(stream, lines, add_newline=add_newline, skip_line_count=skip_line_count)
     #
     mode = "a" if append else "w"
     with open(file_path, mode=mode, encoding="utf-8") as f:
         stream = cast(TextIOWrapper, f)
-        return textfile_write_stream(stream, lines, add_newline=add_newline, skip_line_count=skip_line_count)
+        return _textfile_write_stream(stream, lines, add_newline=add_newline, skip_line_count=skip_line_count)
 
 
-def textfile_write_stream(
+def _textfile_write_stream(
     o_stream: TextIOWrapper, lines: list[str], *, add_newline: bool = False, skip_line_count: int = 0
 ):
     """!

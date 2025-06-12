@@ -2,7 +2,7 @@
 import copy
 import io
 
-# from src.csv import csv_reader
+# from src.csv import csv_string_reader
 from src.lib.table import Table
 from src.lib.table_utl import (
     column_exclusive_index_group,

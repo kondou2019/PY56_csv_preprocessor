@@ -143,13 +143,13 @@ poetry run csv_preprocessor column-select -i test_data/header0/3x3.csv --column 
 CSVファイルをソートする。
 
 ```shell
-poetry run csv_preprocessor column-sort -i test_data/header1/5x5_sort.csv --column-key [1,2]
+cat test_data/header1/5x5_sort.csv | poetry run csv_preprocessor csv-header-del --header 1 | poetry run csv_preprocessor column-sort --column-key [1,2]
 ```
 
 数値順。--column-attr
 
 ```shell
-poetry run csv_preprocessor column-sort -i test_data/header1/5x3_sort_int.csv --column-key [1,2] --column-attr [int,str]
+cat test_data/header1/5x3_sort_int.csv | poetry run csv_preprocessor csv-header-del --header 1 | poetry run csv_preprocessor column-sort --column-key [1,2] --column-attr [int,str]
 ```
 
 ### CSVファイルの種別を判定(csv-filetype)
@@ -216,7 +216,7 @@ poetry run csv_preprocessor custom-header-line1 --separator == -i test_data/cust
 カラム名とインデックスの表示
 
 ```shell
-poetry run csv_preprocessor custom-header-line1 -i test_data/custom/data/1x8_b.csv | tr ',', '\n' | awk '{print NR-1, $0}'
+poetry run csv_preprocessor custom-header-line1 --header 1 -i test_data/custom/data/1x8_b.csv | tr ',', '\n' | awk '{print NR-1, $0}'
 ```
 
 

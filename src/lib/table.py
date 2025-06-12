@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Type, TypeVar
+from typing import Optional, Type, TypeVar
 
 
 @dataclass
@@ -29,7 +29,8 @@ class Table:
         """
         self._header_rows: list[list[str]] = []
         self._rows: list[list[str]] = []
-        self._line_separator: str = "\n"  # 入力時に入力したときの改行コードに変更する
+        self._line_separator: bytes = b"\n"  # 入力時に入力したときの改行コードに変更する
+        self._bom: Optional[bytes] = None  # 入力時に入力したときのBOMに変更する
 
     @classmethod
     def create_rows(cls: Type[Self], rows: list[list[str]]) -> Self:

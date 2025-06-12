@@ -1,8 +1,7 @@
 # import pytest
-import io
 
 from src.lib.column_name import ColumnName
-from src.lib.csv import csv_reader
+from src.lib.csv import csv_string_reader
 from src.lib.table import Table
 
 CSV_3x3 = """\
@@ -13,7 +12,7 @@ a,b,c
 
 
 def test_column_name_0101N() -> None:
-    tbl: Table = csv_reader(io.StringIO(CSV_3x3))
+    tbl: Table = csv_string_reader(CSV_3x3)
     header = tbl._rows[0]
     tbl.row_remove(0)  # ヘッダーを削除
     cn = ColumnName(tbl)

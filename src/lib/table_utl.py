@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from src.lib.common import textfile_read
-from src.lib.csv import csv_file_reader, csv_reader
+from src.lib.csv import csv_file_reader, csv_string_reader
 from src.lib.table import CsvFileTypeInfo, Table
 
 
@@ -331,7 +331,7 @@ def csv_filetype_read(csv_info_path: Path) -> CsvFileTypeInfo:
     else:
         type_name = csv_info_path.stem
     #
-    tbl = csv_reader(io.StringIO("".join(lines)))
+    tbl = csv_string_reader("".join(lines))
     column_count = len(tbl._rows[0])
     row_count = tbl.row_count()
     #
