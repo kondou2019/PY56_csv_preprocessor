@@ -1,4 +1,5 @@
 import difflib
+import io
 import sys
 from io import TextIOWrapper
 from pathlib import Path
@@ -19,9 +20,15 @@ def csv_reader(
     @param strip 値の前後のスペースを除去
     @return 表
     """
+    # 入力
     rows: list[list[str]] = []
-    for line in i_stream:
-        line = line.rstrip("\n")
+    ## 改行コードの退避。一度入力してnewlinesを決定する
+    buf = i_stream.read()
+    line_separator = i_stream.newlines
+    ## 入力データを行入力
+    for line in io.StringIO(buf):  # 入力データをストリーム化
+        # 改行コードを削除
+        line = line.rstrip("\r\n")
         # columns = line.split(",")
         columns = split_csv_string_no_normalize(line, strip=strip)
         rows.append(columns)
@@ -33,6 +40,7 @@ def csv_reader(
         header_rows = rows[:header]
         rows = rows[header:]
     table = Table.create_rows(rows=rows)
+    table._line_separator = line_separator
     if header > 0:
         table._header_rows = header_rows
     # csv_filetypeの情報と一致するか確認
@@ -65,12 +73,12 @@ def csv_writer(o_stream: TextIOWrapper, table: Table):
     for row in table._header_rows:
         line = ",".join(row)
         o_stream.write(line)
-        o_stream.write("\n")
+        o_stream.write(table._line_separator)  # 改行コードを回復
     # データ行の出力
     for row in table._rows:
         line = ",".join(row)
         o_stream.write(line)
-        o_stream.write("\n")
+        o_stream.write(table._line_separator)  # 改行コードを回復
     return
 
 

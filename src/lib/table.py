@@ -29,6 +29,7 @@ class Table:
         """
         self._header_rows: list[list[str]] = []
         self._rows: list[list[str]] = []
+        self._line_separator: str = "\n"  # 入力時に入力したときの改行コードに変更する
 
     @classmethod
     def create_rows(cls: Type[Self], rows: list[list[str]]) -> Self:
