@@ -24,7 +24,7 @@ from src.cmd.cmd_csv import (
 from src.cmd.cmd_custom import cmd_custom_header_get, cmd_custom_header_line1
 from src.cmd.cmd_filter import cmd_filter
 
-__VERSION__ = "0.7.0"
+__VERSION__ = "0.7.255"
 
 
 # サブコマンドをメインコマンドに追加
