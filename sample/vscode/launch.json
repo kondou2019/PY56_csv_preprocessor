@@ -59,6 +59,20 @@
             "justMyCode": true
         },
         {
+            "name": "Python: column-sort",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
+            "args": [
+                "column-sort",
+                "-i", "test_data/header1/5x3_sort_int.csv",
+                "--column-key", "[1,2]",
+                "--column-attr", "[int,str]",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: csv-header-add",
             "type": "debugpy",
             "request": "launch",
@@ -67,6 +81,19 @@
                 "csv-header-add",
                 "-i", "test_data/header0/3x3.csv",
                 "--add-header", "test_data/csv_info/1x3_header.csv"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: csv-header-del",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
+            "args": [
+                "csv-header-del",
+                "-i", "test_data/header1/3x3.csv",
+                "--header", "1"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -81,6 +108,22 @@
                 "-i", "test_data/header0/3x3.csv",
                 "--column-key", "[0]",
                 //"--column-attr", "[int]",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: filter",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/csv_preprocessor.py",
+            "args": [
+                "filter",
+                "--filter-name", "multi_value",
+                //"-i", "test_data/header0/3x3.csv",
+                //"-i", "test_data/header0/3x3_CRLF.csv",
+                "-i", "test_data/header0/3x3_BOM_CRLF.csv",
+                "--filter-option", "--regex ^1$ --repl x",
             ],
             "console": "integratedTerminal",
             "justMyCode": true
