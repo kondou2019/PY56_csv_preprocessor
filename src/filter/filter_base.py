@@ -32,7 +32,7 @@ class FilterBase(metaclass=ABCMeta):
         """
 
     # @abstractmethod
-    def filter_execute_table(self, table: Table, *, column_index_list: list[int] = [], **kwargs) -> Table:
+    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None, **kwargs) -> Table:
         """!
         @brief フィルター処理(Table)
         @param[in] table Table

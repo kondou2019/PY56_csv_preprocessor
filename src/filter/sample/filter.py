@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Self
+from typing import Optional, Self
 
 from src.filter.filter_base import FilterBase, FilterType
 from src.lib.table import Table
@@ -15,5 +15,5 @@ class SampleFilter(FilterBase):
     def filter_get_type(cls) -> FilterType:
         return FilterType.TABLE
 
-    def filter_execute_table(self, table: Table, *, column_index_list: list[int] = [], **kwargs) -> Table:
+    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None, **kwargs) -> Table:
         return table

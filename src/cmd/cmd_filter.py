@@ -121,18 +121,18 @@ def cmd_filter(
     else:
         raise click.ClickException("--filter-name で指定したフィルターの内容が不正です。")
     ### filter 実行
-    if column_index_list is None:
-        column_index_list = list(range(tbl.column_count()))
-
     filter_type = filter_class.filter_get_type()
     filter_obj = filter_class.new_filter()
     if filter_type == FilterType.TABLE:
-        tbl_new = filter_obj.filter_execute_table(tbl)
+        tbl_new = filter_obj.filter_execute_table(tbl, column_index_list=column_index_list, **filter_option_dict)
     elif filter_type == FilterType.COLUMNS:
         raise NotImplementedError()
     elif filter_type == FilterType.ROWS:
         raise NotImplementedError()
     elif filter_type == FilterType.CELL:
+        if column_index_list is None:
+            column_index_list = list(range(tbl.column_count()))
+        #
         for row in tbl._rows:
             for index in column_index_list:
                 cell = row[index]
