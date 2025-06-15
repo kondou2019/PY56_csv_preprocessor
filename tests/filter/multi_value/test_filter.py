@@ -17,8 +17,10 @@ from src.filter.multi_value.filter import MultiValueFilter, multi_value_join, mu
         ("0102N", "a", {"regex": "^a$", "repl": "x"}, "x"),  # クォートなし,置換
         ("0103N", "1", {"regex": "^a$", "repl": "x"}, "1"),  # クォートなし,置換なし
         ("0104N", "", {"regex": "^a$", "repl": "x"}, ""),  # 空文字
-        ("0105N", '"a,b"', {"regex": "^a$", "repl": ""}, '",b"'),  # 削除
-        ("0201N", '"a,b,a"', {"regex": "^a$", "repl": "x"}, '"x,b"'),  # 重複
+        ("0201N", '"a,b,a"', {"regex": "^a$", "repl": "x", "uniq": True}, '"x,b"'),  # 重複
+        ("0202N", '"a,b,a"', {"regex": "^a$", "repl": "x", "uniq": False}, '"x,b,x"'),  # 重複
+        ("0301N", '"a,b"', {"regex": "^a$", "repl": "", "empty_remove": False}, '",b"'),  # 削除
+        ("0302N", '"a,b"', {"regex": "^a$", "repl": "", "empty_remove": True}, '"b"'),
     ],
 )
 def test_filter_execute_cell(_test_id: str, val: str, kwargs: dict[str, Optional[str]], expected: str) -> None:

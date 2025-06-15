@@ -72,6 +72,8 @@ class MultiValueFilter(FilterBase):
         # パラメタの設定
         regex = kwargs["regex"]  # "^a$"
         repl = kwargs["repl"]  # "x"
+        uniq = kwargs.get("uniq", False)  # 重複排除
+        empty_remove = kwargs.get("empty_remove", False)  # 空文字削除
 
         # 分割
         column_value = cell
@@ -82,7 +84,12 @@ class MultiValueFilter(FilterBase):
             column_value_list[i] = re.sub(regex, repl, v)
 
         # 重複排除
-        column_value_list = list(dict.fromkeys(column_value_list))
+        if uniq == True:
+            column_value_list = list(dict.fromkeys(column_value_list))
+
+        # 空文字削除
+        if empty_remove == True:
+            column_value_list = [x for x in column_value_list if x != ""]
 
         # 結合
         result = multi_value_join(column_value_list, quote)
