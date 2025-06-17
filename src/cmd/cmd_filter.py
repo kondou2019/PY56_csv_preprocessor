@@ -90,11 +90,11 @@ def cmd_filter(
     if column is not None:
         column_index_list = option_index_list(column)
     ## フィルターのオプション
-    filter_option_dict: dict[str, Optional[str]] = {}
+    filter_option_args: list[str] = []
     if filter_option is not None:
         filter_option_args = shlex.split(filter_option)
-        filter_option_dict = parse_extra_args(list(filter_option_args))
-
+    else:
+        filter_option_args = []
     # 実行
     ## csvデータ入力
     tbl = csv_file_reader(input_path)
@@ -103,7 +103,7 @@ def cmd_filter(
     #### 動的にpythomモジュールをimport
     project_dir = Path(__file__).parent.parent
     filter_dir = project_dir.joinpath("filter")
-    filter_path = filter_dir.joinpath(filter_name).joinpath("filter.py")
+    filter_path = filter_dir.joinpath(filter_name.replace("-", "_")).joinpath("filter.py")
     if Path.is_file(filter_path) == False:
         raise click.ClickException("--filter-name で指定したフィルターが見つかりません。")
     filter_module = dynamic_import("filter_module01", filter_path)
@@ -122,9 +122,9 @@ def cmd_filter(
         raise click.ClickException("--filter-name で指定したフィルターの内容が不正です。")
     ### filter 実行
     filter_type = filter_class.filter_get_type()
-    filter_obj = filter_class.new_filter()
+    filter_obj = filter_class.new_filter(filter_option_args)
     if filter_type == FilterType.TABLE:
-        tbl_new = filter_obj.filter_execute_table(tbl, column_index_list=column_index_list, **filter_option_dict)
+        tbl_new = filter_obj.filter_execute_table(tbl, column_index_list=column_index_list)
     elif filter_type == FilterType.COLUMNS:
         raise NotImplementedError()
     elif filter_type == FilterType.ROWS:
@@ -136,7 +136,7 @@ def cmd_filter(
         for row in tbl._rows:
             for index in column_index_list:
                 cell = row[index]
-                cell_new = filter_obj.filter_execute_cell(cell, **filter_option_dict)
+                cell_new = filter_obj.filter_execute_cell(cell)
                 row[index] = cell_new
         tbl_new = tbl
 

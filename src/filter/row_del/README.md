@@ -10,5 +10,5 @@
 
 
 ```shell
-poetry run csv_preprocessor filter --filter-name row_del -i test_data/header0/3x3.csv --filter-option "--column_if 0=='4'"
+poetry run csv_preprocessor filter --filter-name row_del -i test_data/header0/3x3.csv --filter-option "--column-if 0=='4'"
 ```

@@ -1,31 +1,27 @@
-import io
 from typing import Optional
 
 import pytest
 
 from src.filter.multi_value.filter import MultiValueFilter, multi_value_join, multi_value_split
 
-# from src.lib.csv import csv_string_reader
-# from src.lib.table import Table
-
 
 @pytest.mark.parametrize(
-    "_test_id, val, kwargs, expected",
+    "_test_id, val, args, expected",
     [
-        ("0101N", '"a,b"', {"regex": "^a$", "repl": "x"}, '"x,b"'),  # 置換
-        ("0101N", '"1,2"', {"regex": "^a$", "repl": "x"}, '"1,2"'),  # 置換なし
-        ("0102N", "a", {"regex": "^a$", "repl": "x"}, "x"),  # クォートなし,置換
-        ("0103N", "1", {"regex": "^a$", "repl": "x"}, "1"),  # クォートなし,置換なし
-        ("0104N", "", {"regex": "^a$", "repl": "x"}, ""),  # 空文字
-        ("0201N", '"a,b,a"', {"regex": "^a$", "repl": "x", "uniq": True}, '"x,b"'),  # 重複
-        ("0202N", '"a,b,a"', {"regex": "^a$", "repl": "x", "uniq": False}, '"x,b,x"'),  # 重複
-        ("0301N", '"a,b"', {"regex": "^a$", "repl": "", "empty_remove": False}, '",b"'),  # 削除
-        ("0302N", '"a,b"', {"regex": "^a$", "repl": "", "empty_remove": True}, '"b"'),
+        ("0101N", '"a,b"', ["--regex", "^a$", "--repl", "x"], '"x,b"'),  # 置換
+        ("0101N", '"1,2"', ["--regex", "^a$", "--repl", "x"], '"1,2"'),  # 置換なし
+        ("0102N", "a", ["--regex", "^a$", "--repl", "x"], "x"),  # クォートなし,置換
+        ("0103N", "1", ["--regex", "^a$", "--repl", "x"], "1"),  # クォートなし,置換なし
+        ("0104N", "", ["--regex", "^a$", "--repl", "x"], ""),  # 空文字
+        ("0201N", '"a,b,a"', ["--regex", "^a$", "--repl", "x", "--uniq"], '"x,b"'),  # 重複
+        ("0202N", '"a,b,a"', ["--regex", "^a$", "--repl", "x"], '"x,b,x"'),  # 重複
+        ("0301N", '"a,b"', ["--regex", "^a$", "--repl", ""], '",b"'),  # 削除
+        ("0302N", '"a,b"', ["--regex", "^a$", "--repl", "", "--empty-remove"], '"b"'),
     ],
 )
-def test_filter_execute_cell(_test_id: str, val: str, kwargs: dict[str, Optional[str]], expected: str) -> None:
-    filter = MultiValueFilter.new_filter()
-    result = filter.filter_execute_cell(val, **kwargs)
+def test_filter_execute_cell(_test_id: str, val: str, args: list[str], expected: str) -> None:
+    filter = MultiValueFilter.new_filter(args)
+    result = filter.filter_execute_cell(val)
     assert result == expected
 
 

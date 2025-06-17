@@ -1,7 +1,6 @@
 from abc import ABCMeta, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Callable, Optional, Self
+from enum import Enum
+from typing import Optional, Self
 
 from src.lib.table import Table
 
@@ -16,7 +15,7 @@ class FilterType(Enum):
 class FilterBase(metaclass=ABCMeta):
     @classmethod
     @abstractmethod
-    def new_filter(cls) -> Self:
+    def new_filter(cls, args: list[str]) -> Self:
         """!
         @brief Filterオブジェクトを作成
         @return Self
@@ -32,7 +31,7 @@ class FilterBase(metaclass=ABCMeta):
         """
 
     # @abstractmethod
-    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None, **kwargs) -> Table:
+    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None) -> Table:
         """!
         @brief フィルター処理(Table)
         @param[in] table Table
@@ -43,7 +42,7 @@ class FilterBase(metaclass=ABCMeta):
         raise NotImplementedError()
 
     # @abstractmethod
-    def filter_execute_cell(self, cell: str, **kwargs) -> str:
+    def filter_execute_cell(self, cell: str) -> str:
         """!
         @brief フィルター処理(cell)
         @param[in] cell セルの値
@@ -53,7 +52,7 @@ class FilterBase(metaclass=ABCMeta):
         raise NotImplementedError()
 
     # @abstractmethod
-    def filter_execute_columns(self, columns: list[str], **kwargs) -> list[str]:
+    def filter_execute_columns(self, columns: list[str]) -> list[str]:
         """!
         @brief フィルター処理(columns)
         @param[in] columns 列
@@ -63,7 +62,7 @@ class FilterBase(metaclass=ABCMeta):
         raise NotImplementedError()
 
     # @abstractmethod
-    def filter_execute_rows(self, rows: list[str], *, column_index_list: list[int] = [], **kwargs) -> list[str]:
+    def filter_execute_rows(self, rows: list[str], *, column_index_list: list[int] = []) -> list[str]:
         """!
         @brief フィルター処理(rows)
         @param[in] rows 行

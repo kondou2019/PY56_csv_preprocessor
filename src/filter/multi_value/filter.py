@@ -1,6 +1,8 @@
 import re
 from dataclasses import dataclass
-from typing import Self
+from typing import Optional, Self
+
+import click
 
 from src.filter.filter_base import FilterBase, FilterType
 from src.lib.table import Table
@@ -61,19 +63,27 @@ def multi_value_replace(
 @dataclass(kw_only=True)
 class MultiValueFilter(FilterBase):
     @classmethod
-    def new_filter(cls) -> Self:
-        return MultiValueFilter()
+    def new_filter(cls, args: list[str]) -> Self:
+        ctx = parse_filter_option.make_context("multi-view", args)
+        x = parse_filter_option.invoke(ctx)
+        return x
 
     @classmethod
     def filter_get_type(cls) -> FilterType:
         return FilterType.CELL
 
-    def filter_execute_cell(self, cell: str, **kwargs) -> str:
+    def __init__(self, *, regex: str, repl: str, uniq: bool = False, empty_remove: bool = False):
+        self.regex = regex
+        self.repl = repl
+        self.uniq = uniq
+        self.empty_remove = empty_remove
+
+    def filter_execute_cell(self, cell: str) -> str:
         # パラメタの設定
-        regex = kwargs["regex"]  # "^a$"
-        repl = kwargs["repl"]  # "x"
-        uniq = kwargs.get("uniq", False)  # 重複排除
-        empty_remove = kwargs.get("empty_remove", False)  # 空文字削除
+        regex = self.regex  # "^a$"
+        repl = self.repl  # "x"
+        uniq = self.uniq
+        empty_remove = self.empty_remove
 
         # 分割
         column_value = cell
@@ -94,3 +104,13 @@ class MultiValueFilter(FilterBase):
         # 結合
         result = multi_value_join(column_value_list, quote)
         return result
+
+
+@click.command(name="multi_view", help="複数値")
+@click.option("--regex", type=str, required=True, help="置換する正規表現")
+@click.option("--repl", type=str, required=True, help="置換する文字列")
+@click.option("--uniq", is_flag=True, help="重複排除")
+@click.option("--empty-remove", is_flag=True, help="空値削除")
+def parse_filter_option(regex: str, repl: str, uniq: bool, empty_remove: bool) -> MultiValueFilter:
+    x = MultiValueFilter(regex=regex, repl=repl, uniq=uniq, empty_remove=empty_remove)
+    return x
