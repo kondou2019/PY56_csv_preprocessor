@@ -1,5 +1,7 @@
+import glob
 import importlib.util
 import inspect
+import os
 import shlex
 import sys
 from pathlib import Path
@@ -143,3 +145,18 @@ def cmd_filter(
     # csvデータ出力
     csv_file_writer(output_path, tbl_new)
     return
+
+
+@click.command(name="filter-list", help="フィルター一覧")
+def cmd_filter_list() -> None:
+    project_dir = Path(__file__).parent.parent
+    filter_base = project_dir.joinpath("filter")
+    for filter_dir in sorted(list(glob.glob(os.path.join(filter_base, "*")))):
+        if os.path.isdir(filter_dir) == False:
+            continue
+        filter_path = os.path.join(filter_dir, "filter.py")
+        if os.path.exists(filter_path) == False:
+            continue
+        filter_name = os.path.basename(filter_dir)
+        filter_name = filter_name.replace("_", "-")
+        print(filter_name)

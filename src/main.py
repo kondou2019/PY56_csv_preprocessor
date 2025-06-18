@@ -22,7 +22,7 @@ from src.cmd.cmd_csv import (
     cmd_csv_report,
 )
 from src.cmd.cmd_custom import cmd_custom_header_get, cmd_custom_header_line1
-from src.cmd.cmd_filter import cmd_filter
+from src.cmd.cmd_filter import cmd_filter, cmd_filter_list
 
 __VERSION__ = "0.7.255"
 
@@ -52,6 +52,7 @@ cli.add_command(cmd_csv_report)
 cli.add_command(cmd_custom_header_get)
 cli.add_command(cmd_custom_header_line1)
 cli.add_command(cmd_filter)
+cli.add_command(cmd_filter_list)
 
 
 def main(argv: list[str]) -> None:

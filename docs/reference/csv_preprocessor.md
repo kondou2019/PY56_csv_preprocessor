@@ -228,3 +228,11 @@ poetry run csv_preprocessor custom-header-line1 --header 1 -i test_data/custom/d
 poetry run csv_preprocessor filter --filter-name sample -i test_data/header1/3x3.csv
 poetry run csv_preprocessor filter --filter-name sample --column [1] -i test_data/header1/3x3.csv
 ```
+
+### フィルター一覧(filter-list)
+
+フィルター一覧の出力  
+
+```shell
+poetry run csv_preprocessor filter-list
+```
