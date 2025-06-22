@@ -5,7 +5,7 @@
 
 | コマンド                                          | 機能                           |
 | ------------------------------------------------- | ------------------------------ |
-| [csv_preprocessor](reference/csv_preprocessor.md) | CSVファイルの前処理を行う。    |
+| [csv_preprocessor](reference/csv_preprocessor/index.md) | CSVファイルの前処理を行う。    |
 | [tool_csv](reference/tool_csv.md)                 | テストデータを作成するコマンド |
 
 ## CSVファイルの加工手順
