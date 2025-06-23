@@ -25,6 +25,31 @@ def dynamic_import(module_name, module_path):
     return module
 
 
+def filter_module_import(filter_dir: Path) -> FilterBase:
+    """
+    指定されたパスからモジュールを動的にインポートする関数
+    """
+    #### 動的にpythomモジュールをimport
+    filter_path = filter_dir.joinpath("filter.py")
+    if Path.is_file(filter_path) == False:
+        raise click.ClickException("--filter-name で指定したフィルターが見つかりません。")
+    filter_module = dynamic_import("filter_module01", filter_path)
+    #### モジュール内のFilterBaseクラスを継承したクラスを取得
+    filter_class = None
+    class_list = [
+        member
+        for _name, member in inspect.getmembers(filter_module)
+        if inspect.isclass(member) and member.__module__ == filter_module.__name__
+    ]  # モジュールからクラスオブジェクトの一覧を作成
+    for c in class_list:
+        if issubclass(c, FilterBase):
+            filter_class = c
+            break
+    else:
+        raise click.ClickException("--filter-name で指定したフィルターの内容が不正です。")
+    return filter_class
+
+
 def parse_extra_args(args: list[str]) -> dict[str, Optional[str]]:
     """
     --key value、--key=value、--flag の形式を辞書に変換する。
@@ -104,33 +129,23 @@ def cmd_filter(
     ### filter モジュールの取得
     #### 動的にpythomモジュールをimport
     project_dir = Path(__file__).parent.parent
-    filter_dir = project_dir.joinpath("filter")
-    filter_path = filter_dir.joinpath(filter_name.replace("-", "_")).joinpath("filter.py")
-    if Path.is_file(filter_path) == False:
-        raise click.ClickException("--filter-name で指定したフィルターが見つかりません。")
-    filter_module = dynamic_import("filter_module01", filter_path)
-    #### モジュール内のFilterBaseクラスを継承したクラスを取得
-    filter_class = None
-    class_list = [
-        member
-        for _name, member in inspect.getmembers(filter_module)
-        if inspect.isclass(member) and member.__module__ == filter_module.__name__
-    ]  # モジュールからクラスオブジェクトの一覧を作成
-    for c in class_list:
-        if issubclass(c, FilterBase):
-            filter_class = c
-            break
-    else:
-        raise click.ClickException("--filter-name で指定したフィルターの内容が不正です。")
+    filter_base = project_dir.joinpath("filter")
+    filter_dir = filter_base.joinpath(filter_name.replace("-", "_"))
+    filter_class = filter_module_import(Path(filter_dir))
     ### filter 実行
     filter_type = filter_class.filter_get_type()
     filter_obj = filter_class.new_filter(filter_option_args)
     if filter_type == FilterType.TABLE:
-        tbl_new = filter_obj.filter_execute_table(tbl, column_index_list=column_index_list)
-    elif filter_type == FilterType.COLUMNS:
+        filter_obj.filter_execute_table(tbl, column_index_list=column_index_list)
+    elif filter_type == FilterType.COLUMN:
         raise NotImplementedError()
-    elif filter_type == FilterType.ROWS:
-        raise NotImplementedError()
+    elif filter_type == FilterType.ROW:
+        rows_new: list[list[str]] = []
+        for row in tbl._rows:
+            row_new = filter_obj.filter_execute_row(row)
+            if row_new is not None:
+                rows_new.append(row_new)
+        tbl._rows = rows_new
     elif filter_type == FilterType.CELL:
         if column_index_list is None:
             column_index_list = list(range(tbl.column_count()))
@@ -140,10 +155,9 @@ def cmd_filter(
                 cell = row[index]
                 cell_new = filter_obj.filter_execute_cell(cell)
                 row[index] = cell_new
-        tbl_new = tbl
 
     # csvデータ出力
-    csv_file_writer(output_path, tbl_new)
+    csv_file_writer(output_path, tbl)
     return
 
 
@@ -157,6 +171,9 @@ def cmd_filter_list() -> None:
         filter_path = os.path.join(filter_dir, "filter.py")
         if os.path.exists(filter_path) == False:
             continue
+        filter_class = filter_module_import(Path(filter_dir))
+        filter_type = filter_class.filter_get_type()
+
         filter_name = os.path.basename(filter_dir)
         filter_name = filter_name.replace("_", "-")
-        print(filter_name)
+        print(f"{filter_name},{filter_type}")
