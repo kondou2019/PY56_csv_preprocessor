@@ -8,8 +8,8 @@ from src.lib.table import Table
 class FilterType(Enum):
     TABLE = 1
     CELL = 2
-    COLUMNS = 3
-    ROWS = 4
+    COLUMN = 3
+    ROW = 4
 
 
 class FilterBase(metaclass=ABCMeta):
@@ -31,13 +31,11 @@ class FilterBase(metaclass=ABCMeta):
         """
 
     # @abstractmethod
-    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None) -> Table:
+    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None) -> None:
         """!
         @brief フィルター処理(Table)
         @param[in] table Table
         @param[in] column_index_list 対象のカラムのインデックスリスト
-        @param[in] kwargs フィルターオプション
-        @retval Table
         """
         raise NotImplementedError()
 
@@ -46,28 +44,25 @@ class FilterBase(metaclass=ABCMeta):
         """!
         @brief フィルター処理(cell)
         @param[in] cell セルの値
-        @param[in] kwargs フィルターオプション
         @retval str
         """
         raise NotImplementedError()
 
     # @abstractmethod
-    def filter_execute_columns(self, columns: list[str]) -> list[str]:
+    def filter_execute_column(self, columns: list[str]) -> list[str]:
         """!
         @brief フィルター処理(columns)
         @param[in] columns 列
-        @param[in] kwargs フィルターオプション
         @retval list[str]
         """
         raise NotImplementedError()
 
     # @abstractmethod
-    def filter_execute_rows(self, rows: list[str], *, column_index_list: list[int] = []) -> list[str]:
+    def filter_execute_row(self, rows: list[str]) -> Optional[list[str]]:
         """!
         @brief フィルター処理(rows)
         @param[in] rows 行
-        @param[in] column_index_list 対象のカラムのインデックスリスト
-        @param[in] kwargs フィルターオプション
         @retval list[str]
+        @retval None 削除
         """
         raise NotImplementedError()

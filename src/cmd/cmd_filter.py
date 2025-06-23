@@ -126,11 +126,16 @@ def cmd_filter(
     filter_type = filter_class.filter_get_type()
     filter_obj = filter_class.new_filter(filter_option_args)
     if filter_type == FilterType.TABLE:
-        tbl_new = filter_obj.filter_execute_table(tbl, column_index_list=column_index_list)
-    elif filter_type == FilterType.COLUMNS:
+        filter_obj.filter_execute_table(tbl, column_index_list=column_index_list)
+    elif filter_type == FilterType.COLUMN:
         raise NotImplementedError()
-    elif filter_type == FilterType.ROWS:
-        raise NotImplementedError()
+    elif filter_type == FilterType.ROW:
+        rows_new: list[list[str]] = []
+        for row in tbl._rows:
+            row_new = filter_obj.filter_execute_row(row)
+            if row_new is not None:
+                rows_new.append(row_new)
+        tbl._rows = rows_new
     elif filter_type == FilterType.CELL:
         if column_index_list is None:
             column_index_list = list(range(tbl.column_count()))
@@ -140,10 +145,9 @@ def cmd_filter(
                 cell = row[index]
                 cell_new = filter_obj.filter_execute_cell(cell)
                 row[index] = cell_new
-        tbl_new = tbl
 
     # csvデータ出力
-    csv_file_writer(output_path, tbl_new)
+    csv_file_writer(output_path, tbl)
     return
 
 
