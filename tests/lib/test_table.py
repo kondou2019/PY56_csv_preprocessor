@@ -93,6 +93,17 @@ def test_row_duplicate_0101N():
     assert tbl._rows[1] == ["x", "2", "3"]
 
 
+def test_row_empty_n0101() -> None:
+    tbl = Table.create_rows(copy.deepcopy(TABLE_3x3))
+    row1 = tbl._rows[0]
+    tbl.row_empty(row_index=0, col_start=1, col_ended=2)
+    assert tbl._rows[0] == ["a", "", ""]
+
+    row1 = tbl._rows[1]
+    tbl.row_empty(row_index=1, col_start=1)
+    assert tbl._rows[1] == ["1", "", ""]
+
+
 def test_row_insert_0101N():
     tbl = Table.create_rows(copy.deepcopy(TABLE_3x3))
     tbl.row_insert(row_index=1, row=["A", "B", "C"])

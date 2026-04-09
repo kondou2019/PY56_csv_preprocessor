@@ -122,6 +122,25 @@ class Table:
         self._rows.insert(row_index + 1, duplicated_row)  # 次の行に挿入する
         return duplicated_row
 
+    def row_empty(
+        self: Self, row_index: int, *, col_start: Optional[int] = None, col_ended: Optional[int] = None
+    ) -> None:
+        """!
+        @brief 行のカラムを空にする
+        @param row_index 行の位置
+        @param col_start 開始カラムの位置
+        @param col_ended 終了カラムの位置。None 最後まで
+        """
+        if col_start is None:
+            return
+        if col_ended is None:
+            col_ended = self.column_count() - 1
+        #
+        row = self._rows[row_index]
+        for col_index in range(col_start, col_ended + 1):
+            row[col_index] = ""
+        return
+
     def row_insert(self: Self, row_index: int, row: list[str]) -> None:
         """!
         @brief 行を挿入する
