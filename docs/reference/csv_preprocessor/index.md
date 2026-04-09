@@ -61,3 +61,7 @@ poetry run csv_preprocessor filter --filter-name sample --column [1] -i test_dat
 ```shell
 poetry run csv_preprocessor filter-list
 ```
+
+## カスタムフィルターの
+
+[カスタムフィルターの作成](filter.md)
