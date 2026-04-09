@@ -31,11 +31,12 @@ class FilterBase(metaclass=ABCMeta):
         """
 
     # @abstractmethod
-    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None) -> None:
+    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None) -> Table:
         """!
         @brief フィルター処理(Table)
         @param[in] table Table
         @param[in] column_index_list 対象のカラムのインデックスリスト
+        @retval Table
         """
         raise NotImplementedError()
 

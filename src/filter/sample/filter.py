@@ -19,8 +19,8 @@ class SampleFilter(FilterBase):
     def filter_get_type(cls) -> FilterType:
         return FilterType.TABLE
 
-    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None) -> None:
-        return
+    def filter_execute_table(self, table: Table, *, column_index_list: Optional[list[int]] = None) -> Table:
+        return table
 
 
 @click.command(name="sample", help="フィルタサンプル")

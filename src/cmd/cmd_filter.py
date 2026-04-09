@@ -136,7 +136,7 @@ def cmd_filter(
     filter_type = filter_class.filter_get_type()
     filter_obj = filter_class.new_filter(filter_option_args)
     if filter_type == FilterType.TABLE:
-        filter_obj.filter_execute_table(tbl, column_index_list=column_index_list)
+        tbl = filter_obj.filter_execute_table(tbl, column_index_list=column_index_list)
     elif filter_type == FilterType.COLUMN:
         raise NotImplementedError()
     elif filter_type == FilterType.ROW:
