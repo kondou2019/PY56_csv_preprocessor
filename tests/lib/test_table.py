@@ -103,11 +103,11 @@ def test_row_duplicate_0101N():
 def test_row_empty_n0101() -> None:
     tbl = Table.create_rows(copy.deepcopy(TABLE_3x3))
     row1 = tbl._rows[0]
-    tbl.row_empty(row_index=0, col_start=1, col_ended=2)
-    assert tbl._rows[0] == ["a", "", ""]
+    tbl.row_empty(row_index=0, start_col_index=1, end_col_index=2)
+    assert tbl._rows[0] == ["a", "", "c"]
 
     row1 = tbl._rows[1]
-    tbl.row_empty(row_index=1, col_start=1)
+    tbl.row_empty(row_index=1, start_col_index=1)
     assert tbl._rows[1] == ["1", "", ""]
 
 
@@ -156,10 +156,12 @@ def test_row_remove_0101N():
 
 def test_row_remove_multi_0101N():
     tbl = Table.create_rows(copy.deepcopy(TABLE_3x3))
-    tbl.row_remove_multi(start_row_index=1, end_row_index=2)
+    result = tbl.row_remove_multi(start_row_index=1, end_row_index=2)
     assert len(tbl._rows) == 2
     assert tbl._rows[0] == ["a", "b", "c"]
     assert tbl._rows[1] == ["4", "5", "6"]
+    assert len(result) == 1
+    assert result[0] == ["1", "2", "3"]
 
 
 def test_table_select_column_range_0101N():

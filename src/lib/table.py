@@ -131,21 +131,21 @@ class Table:
         return duplicated_row
 
     def row_empty(
-        self: Self, row_index: int, *, col_start: Optional[int] = None, col_ended: Optional[int] = None
+        self: Self, row_index: int, *, start_col_index: Optional[int] = None, end_col_index: Optional[int] = None
     ) -> None:
         """!
         @brief 行のカラムを空にする
         @param row_index 行の位置
         @param col_start 開始カラムの位置
-        @param col_ended 終了カラムの位置。None 最後まで
+        @param col_ended 終了カラムの位置(最後のインデックスは含まない)。None 最後まで
         """
-        if col_start is None:
+        if start_col_index is None:
             return
-        if col_ended is None:
-            col_ended = self.column_count() - 1
+        if end_col_index is None:
+            end_col_index = self.column_count()
         #
         row = self._rows[row_index]
-        for col_index in range(col_start, col_ended + 1):
+        for col_index in range(start_col_index, end_col_index):
             row[col_index] = ""
         return
 
