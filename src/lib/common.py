@@ -60,7 +60,7 @@ def textfile_write(
     *,
     append: bool = False,
     add_newline: bool = False,
-    skip_line_count: int = 0
+    skip_line_count: int = 0,
 ):
     """!
     @brief テキストファイルを出力
@@ -96,6 +96,28 @@ def _textfile_write_stream(
             line += "\n"
         o_stream.write(line)
     return
+
+
+def quote_add(s: str) -> str:
+    """!
+    @brief 文字列の前後にクォート(ダブルクォート)を追加する。
+    @param s 文字列
+    @return 文字列
+    """
+    return f'"{s}"'
+
+
+def quote_remove(s: str) -> str:
+    """!
+    @brief 文字列の前後のクォート(ダブルクォート)を削除する。
+    @param s 文字列
+    @return 文字列
+    """
+    if s.startswith('"'):
+        s = s[1:]
+    if s.endswith('"'):
+        s = s[:-1]
+    return s
 
 
 def split_csv_string_no_normalize(input_string: str, *, delimiter: str = ",", strip: bool = False) -> list[str]:

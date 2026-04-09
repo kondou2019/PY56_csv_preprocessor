@@ -10,3 +10,4 @@
 ## filter_execute_table()の実装
 
 table 引数の Table オブジェクトを加工する。カラムの追加や削除。行の追加や削除ができる。  
+セルには、クォートがそのまま入っている。quote_add(),quote_remove()を使用すると良い  

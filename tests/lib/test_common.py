@@ -2,13 +2,36 @@ import io
 
 import pytest
 
-from src.lib.common import split_csv_string_no_normalize, textfile_read_stream
+from src.lib.common import quote_add, quote_remove, split_csv_string_no_normalize, textfile_read_stream
 
 LINE_3 = """\
 line1
 line2
 line3
 """
+
+
+@pytest.mark.parametrize(
+    "test_id, val, expected",
+    [
+        ("0101N", "a", '"a"'),
+    ],
+)
+def test_quote_add_x9901(test_id: str, val: str, expected: str):
+    result = quote_add(val)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "test_id, val, expected",
+    [
+        ("0101N", '"a"', "a"),
+        ("0102N", "a", "a"),  # クォートなし
+    ],
+)
+def test_quote_remove_x9901(test_id: str, val: str, expected: str):
+    result = quote_remove(val)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
