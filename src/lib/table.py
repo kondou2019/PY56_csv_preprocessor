@@ -105,6 +105,14 @@ class Table:
         """
         self._rows.append(row)
 
+    def row_add_multi(self: Self, row_list: list[list[str]]) -> None:
+        """!
+        @brief 行のリストを最後に追加する
+        @param row_list 行のリスト
+        """
+        for row in row_list:
+            self._rows.append(row)
+
     def row_count(self: Self) -> int:
         """!
         @brief 行数を取得する

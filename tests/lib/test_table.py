@@ -76,6 +76,13 @@ def test_row_add_0101N():
     assert tbl._rows[3] == ["A", "B", "C", "D"]
 
 
+def test_row_add_multi_n0101():
+    tbl = Table.create_rows(copy.deepcopy(TABLE_3x3))
+    tbl.row_add_multi([["A1", "B1", "C1"], ["A2", "B2", "C2"]])
+    assert tbl._rows[3] == ["A1", "B1", "C1"]
+    assert tbl._rows[4] == ["A2", "B2", "C2"]
+
+
 def test_row_duplicate_0101N():
     tbl = Table.create_rows(copy.deepcopy(TABLE_3x3))
     row1 = tbl._rows[1]
