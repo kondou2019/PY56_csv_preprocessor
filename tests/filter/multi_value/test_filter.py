@@ -29,7 +29,9 @@ def test_filter_execute_cell(_test_id: str, val: str, args: list[str], expected:
     "_test_id, val, quote, expected",
     [
         ("0101N", ["a", "b"], True, '"a,b"'),
-        ("0102N", ["a"], False, "a"),
+        ("0102N", [], True, '""'),
+        ("0201N", ["a"], False, "a"),
+        ("0202N", [], False, ""),
     ],
 )
 def test_multi_value_join_0001X(_test_id: str, val: list[str], quote: bool, expected: str) -> None:

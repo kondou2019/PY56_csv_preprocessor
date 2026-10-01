@@ -16,6 +16,8 @@ def multi_value_join(v: list[str], quote: bool) -> str:
     @retval 結合した文字列
     """
     if quote == False:
+        if len(v) == 0:
+            return ""
         assert len(v) == 1
         return v[0]
     return f'"{",".join(v)}"'
